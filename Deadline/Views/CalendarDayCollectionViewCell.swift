@@ -7,7 +7,6 @@
 
 import UIKit
 
-class CalenderDayCollectionViewCell: UICollectionViewCell {
-    var textLabel: UILabel!
-    var text: String?
+class CalendarDayCollectionViewCell: UICollectionViewCell {
+    @IBOutlet var textLabel: UILabel!
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CalenderCollectionView: UICollectionView {
+class CalendarCollectionView: UICollectionView {
     
 }
 

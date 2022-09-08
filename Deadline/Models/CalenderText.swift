@@ -7,6 +7,6 @@
 
 import Foundation
 
-enum Week {
-    case sun, mon, tue, wed, thu, fri ,sat
+struct ToDoList {
+    
 }
