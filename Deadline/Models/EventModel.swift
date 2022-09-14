@@ -8,8 +8,7 @@
 import Foundation
 
 struct ToDoDetail {
-    var section: Int = 0
-    var detailName: String = "NoDetailTitle"
+    var detailName: String = ""
     var needTime: Int?
     var toDoYear: Int?
     var toDoMonth: Int?
@@ -18,8 +17,13 @@ struct ToDoDetail {
     var toDoMinute: Int?
 }
 
-struct ToDoEvent {
-    var name: String = "NoTitle"
+struct ToDoSection {
+    var section: Int?
     var detail: [ToDoDetail]?
+}
+
+struct ToDoEvent {
+    var name: String = ""
+    var section: [ToDoSection]
     var deadline: Date
 }

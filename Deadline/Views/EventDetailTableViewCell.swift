@@ -9,6 +9,7 @@ import UIKit
 
 protocol EventDetailTableViewCellDelegate {
     func tappedDetailTitleTextField(_ cell: EventDetailTableViewCell)
+    func completeDetailTitleTextField(_ cell: EventDetailTableViewCell, text: String)
 }
 
 class EventDetailTableViewCell: UITableViewCell {
@@ -22,6 +23,8 @@ class EventDetailTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         detailTitleTextField.addTarget(self, action: #selector(didBeganEditing(_:)), for: .editingDidBegin)
+        detailTitleTextField.addTarget(self, action: #selector(didEndEditing(_:)), for: .editingDidEnd)
+        detailTitleTextField.addTarget(self, action: #selector(didEndEditingOnExit(_:)), for: .editingDidEndOnExit)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -32,6 +35,11 @@ class EventDetailTableViewCell: UITableViewCell {
     
     @objc func didBeganEditing(_ sender: UITextField) {
         delegate?.tappedDetailTitleTextField(self)
+    }
+    @objc func didEndEditing(_ sender: UITextField) {
+        delegate?.completeDetailTitleTextField(self, text: sender.text ?? "")
+    }
+    @objc func didEndEditingOnExit(_ sender: UITextField) {
     }
 
 }
