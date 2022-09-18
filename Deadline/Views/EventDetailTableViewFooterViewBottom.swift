@@ -7,20 +7,23 @@
 
 import UIKit
 
-protocol EventDetailTableViewFooterViewDelegate {
-    func tappedFooterViewAddDetailButton(_ view: EventDetailTableViewFooterView, section: Int)
+protocol EventDetailTableViewFooterViewBottomDelegate {
+    func tappedFooterViewAddDetailButton(_ view: EventDetailTableViewFooterViewBottom, section: Int)
+    func tappedFooterViewAddSectionButton(_ view: EventDetailTableViewFooterViewBottom, section: Int)
 }
 
-class EventDetailTableViewFooterView: UITableViewHeaderFooterView {
+class EventDetailTableViewFooterViewBottom: UITableViewHeaderFooterView {
     
-    var delegate: EventDetailTableViewFooterViewDelegate?
+    var delegate: EventDetailTableViewFooterViewBottomDelegate?
     let addDetailButton = UIButton()
+    let addSectionButton = UIButton()
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         configureContents()
         contentView.backgroundColor = .systemBackground
         addDetailButton.addTarget(self, action: #selector(tappedAddDetailButton(_:)), for: .touchUpInside)
+        addSectionButton.addTarget(self, action: #selector(tappedAddSectionButton(_:)), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -36,6 +39,13 @@ class EventDetailTableViewFooterView: UITableViewHeaderFooterView {
         addDetailButton.backgroundColor = .systemIndigo
         contentView.addSubview(addDetailButton)
         
+        addSectionButton.translatesAutoresizingMaskIntoConstraints = false
+        addSectionButton.layer.cornerRadius = 12
+        addSectionButton.layer.masksToBounds = true
+        addSectionButton.setTitle("Add Section", for: .normal)
+        addSectionButton.backgroundColor = .systemIndigo
+        contentView.addSubview(addSectionButton)
+        
         let guide = contentView.layoutMarginsGuide
         
         NSLayoutConstraint.activate([
@@ -45,13 +55,21 @@ class EventDetailTableViewFooterView: UITableViewHeaderFooterView {
             addDetailButton.centerXAnchor.constraint(equalTo: guide.centerXAnchor, constant: 0.0),
             // 警告太多晚點再處理
             addDetailButton.widthAnchor.constraint(equalToConstant: 300),
-            addDetailButton.heightAnchor.constraint(equalToConstant: 34.0)
+            addDetailButton.heightAnchor.constraint(equalToConstant: 34.0),
+            addSectionButton.topAnchor.constraint(equalTo: addDetailButton.bottomAnchor, constant: 8.0),
+            addSectionButton.centerXAnchor.constraint(equalTo: guide.centerXAnchor, constant: 0.0),
+            addSectionButton.widthAnchor.constraint(equalToConstant: 300),
+            addSectionButton.heightAnchor.constraint(equalToConstant: 34.0)
         ])
         
     }
     
     @objc func tappedAddDetailButton(_ sender: UIButton) {
         delegate?.tappedFooterViewAddDetailButton(self, section: sender.tag)
+    }
+    
+    @objc func tappedAddSectionButton(_ sender: UIButton) {
+        delegate?.tappedFooterViewAddSectionButton(self, section: sender.tag)
     }
     
 }

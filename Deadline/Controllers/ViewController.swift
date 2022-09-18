@@ -101,10 +101,18 @@ class ViewController: UIViewController {
     }
     
     func NeedmockData() {
-        for i in 0..<10 {
+//        for i in 0..<10 {
 //            let data = ToDoEvent(name: "Test \(i)", detail: [ToDoDetail(detailName: "Test Detail Title \(i)", needTime: 1, toDoYear: 2022, toDoMonth: i+1, toDoDay: i+5, toDoHour: i+10, toDoMinute: i+1)], deadline: Date())
 //            mockData.append(data)
-        }
+            if let data = UserDefaults.standard.data(forKey: "test") {
+                do {
+                    let data = try JSONDecoder().decode(ToDoEvent.self, from: data)
+                    mockData.append(data)
+                } catch {
+                    print("Decoding error:", error)
+                }
+            }
+//        }
     }
 
 }
