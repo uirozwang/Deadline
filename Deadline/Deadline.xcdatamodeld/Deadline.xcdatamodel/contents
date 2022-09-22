@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="ToDoEvent" representedClassName=".Entity" syncable="YES">
-        <attribute name="deadline" optional="YES" attributeType="Date" usesScalarValueType="YES"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="section" optional="YES" attributeType="Transformable" customClassName="."/>
+    <entity name="ToDoEventData" representedClassName=".Entity" syncable="YES">
+        <attribute name="data" optional="YES" attributeType="Binary"/>
     </entity>
     <elements>
-        <element name="ToDoEvent" positionX="-63" positionY="-18" width="128" height="88"/>
+        <element name="ToDoEventData" positionX="-63" positionY="-18" width="128" height="58"/>
     </elements>
 </model>

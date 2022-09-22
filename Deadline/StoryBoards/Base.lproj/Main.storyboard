@@ -13,7 +13,7 @@
         <!--Calenlar-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Deadline" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="CalendarViewController" customModule="Deadline" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -212,7 +212,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="960.28037383177559" y="91.360691144708426"/>
+            <point key="canvasLocation" x="-676" y="847"/>
         </scene>
         <!--New Event-->
         <scene sceneID="APN-Ta-n6r">
@@ -443,7 +443,23 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1766.3551401869158" y="993.95248380129601"/>
+            <point key="canvasLocation" x="1602" y="847"/>
+        </scene>
+        <!--Events-->
+        <scene sceneID="vmY-oh-Byp">
+            <objects>
+                <viewController id="tiw-61-E0j" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ZyF-xI-ai1">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="D5c-5p-jTf"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Events" id="prE-81-h3H"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SC9-95-HmU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="820" y="847"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Jc6-Pe-GXN">
@@ -457,12 +473,32 @@
                     </tabBar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="IjZ-cz-Ph2"/>
+                        <segue destination="Xzi-pZ-RlU" kind="relationship" relationship="viewControllers" id="sSi-A4-SVU"/>
                         <segue destination="lcP-Zl-QRM" kind="relationship" relationship="viewControllers" id="obU-4y-rD2"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cgL-OM-eSM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="60.280373831775698" y="91.360691144708426"/>
+            <point key="canvasLocation" x="59" y="73"/>
+        </scene>
+        <!--Events-->
+        <scene sceneID="d3E-yH-q7Q">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Xzi-pZ-RlU" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Events" image="table" catalog="system" id="1Rp-ho-dW0"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="T6W-WP-sN1">
+                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="tiw-61-E0j" kind="relationship" relationship="rootViewController" id="JEj-fi-Dgl"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Dg-oL-9HI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="58.878504672897193" y="846.86825053995688"/>
         </scene>
     </scenes>
     <resources>
@@ -470,6 +506,7 @@
         <image name="chevron.left" catalog="system" width="96" height="128"/>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
         <image name="plus.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="table" catalog="system" width="128" height="93"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -8,6 +8,9 @@
 import UIKit
 
 // 需要一個protocol來通知viewcontroller更新資料，重新讀取or打包替換
+protocol NewEventViewControllerDelegate {
+    func tappedSaveButton()
+}
 
 class NewEventViewController: UIViewController {
     
@@ -29,19 +32,19 @@ class NewEventViewController: UIViewController {
     @IBOutlet var positionView: UIView!
     
     @IBAction func tappedSaveButton(sender: UIButton) {
-        let date = datePicker.date
+        
+        var date = datePicker.date
+        // 修改時區失敗，暫時先自己加8小時
+        date = date + 8*3600
+        data.deadline = date
+        
         if let indexPath = indexPath {
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
             print(indexPath)
         }
-    
-        print(date)
-     
-        data.deadline = date
         
         if let text = titleTextField.text {
             data.name = text
-            print(text)
         }
         
         do {
@@ -50,8 +53,6 @@ class NewEventViewController: UIViewController {
         } catch {
             print("Encoding error", error)
         }
-        
-        print(data)
         print(NSHomeDirectory())
         readData()
     }
@@ -92,7 +93,7 @@ class NewEventViewController: UIViewController {
                                               )
                          ],
                          deadline: Date())
-    
+    // MARK: - ViewLifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
@@ -122,7 +123,7 @@ class NewEventViewController: UIViewController {
         NotificationCenter.default.removeObserver(UIResponder.keyboardWillHideNotification)
     }
     
-    
+    // MARK: - Many Function
     
     @objc func keyboardEvent(_ notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
@@ -175,7 +176,6 @@ class NewEventViewController: UIViewController {
     }
     
     func readData() {
-
         if let data = UserDefaults.standard.data(forKey: "test") {
             do {
                 self.data = try JSONDecoder().decode(ToDoEvent.self, from: data)
@@ -183,10 +183,11 @@ class NewEventViewController: UIViewController {
                 print("Decoding error:", error)
             }
         }
-        print(data)
     }
         
 }
+
+// MARK: -- Extension
 
 extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -294,6 +295,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension NewEventViewController: EventDetailTableViewCellDelegate {
+    // 還沒想到辦法觸法這個
     func changedTimePopUpButton(_ cell: EventDetailTableViewCell) {
         tableView.reloadData()
         print(#function)

@@ -7,21 +7,20 @@
 
 import Foundation
 import CoreData
-/*
-public class ToDoEvent: NSManagedObject {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<ToDoEvent> {
-        return NSFetchRequest<ToDoEvent>(entityName: "ToDoEvent")
-    }
-    
-    @NSManaged public var name: String
-    @NSManaged public var section: [ToDoSection]
-    @NSManaged public var deadline: Date
-    
+
+/// section為同一事件分區，預計做成同一個section內的事項，順序不拘，但前面section做完才能往下一個做
+struct ToDoEvent: Codable {
+    var name: String = ""
+    var section: [ToDoSection]
+    var deadline: Date
 }
-*/
+/// section為分區序號
+struct ToDoSection: Codable {
+    var section: Int?
+    var detail: [ToDoDetail]?
+}
 
-
+/// need代表用時，toDo為實際排程的時間
 struct ToDoDetail: Codable {
     var detailName: String = ""
     var needHour: Int?
@@ -31,16 +30,5 @@ struct ToDoDetail: Codable {
     var toDoDay: Int?
     var toDoHour: Int?
     var toDoMinute: Int?
-}
-
-struct ToDoSection: Codable {
-    var section: Int?
-    var detail: [ToDoDetail]?
-}
-
-struct ToDoEvent: Codable {
-    var name: String = ""
-    var section: [ToDoSection]
-    var deadline: Date
 }
 

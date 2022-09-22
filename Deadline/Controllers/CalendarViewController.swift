@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import CoreData
 
-class ViewController: UIViewController {
+class CalendarViewController: UIViewController {
     
     @IBOutlet var weekCollectionView: UICollectionView!
     @IBOutlet var dayCollectionView: UICollectionView!
@@ -27,12 +28,7 @@ class ViewController: UIViewController {
     
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31]
-    
-    /*
-    var mockData = [ToDoEvent(name: "做APP", detail: [(name: "草稿", needTime: 2), (name: "Storyboard", needTime: 2), (name: "gua", needTime: 5)]),
-                    ToDoEvent(name: "做APP", detail: [(name: "草稿", needTime: 2), (name: "Storyboard", needTime: 2), (name: "gua", needTime: 5)])]
-     */
-    var mockData = [ToDoEvent]()
+    var data = [ToDoEvent]()
     
     let lineWidth: CGFloat = 2
     
@@ -55,7 +51,7 @@ class ViewController: UIViewController {
         weekCollectionView.dataSource = self
         toDoTableView.delegate = self
         toDoTableView.dataSource = self
-        NeedmockData()
+        readData()
         
     }
     
@@ -100,24 +96,20 @@ class ViewController: UIViewController {
         dayCollectionView.reloadData()
     }
     
-    func NeedmockData() {
-//        for i in 0..<10 {
-//            let data = ToDoEvent(name: "Test \(i)", detail: [ToDoDetail(detailName: "Test Detail Title \(i)", needTime: 1, toDoYear: 2022, toDoMonth: i+1, toDoDay: i+5, toDoHour: i+10, toDoMinute: i+1)], deadline: Date())
-//            mockData.append(data)
-            if let data = UserDefaults.standard.data(forKey: "test") {
-                do {
-                    let data = try JSONDecoder().decode(ToDoEvent.self, from: data)
-                    mockData.append(data)
-                } catch {
-                    print("Decoding error:", error)
-                }
+    func readData() {
+        if let data = UserDefaults.standard.data(forKey: "test") {
+            do {
+                let data = try JSONDecoder().decode(ToDoEvent.self, from: data)
+                self.data.append(data)
+            } catch {
+                print("Decoding error:", error)
             }
-//        }
+        }
     }
 
 }
 
-extension ViewController: UICollectionViewDelegate {
+extension CalendarViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
@@ -130,7 +122,7 @@ extension ViewController: UICollectionViewDelegate {
     
 }
 
-extension ViewController: UICollectionViewDataSource {
+extension CalendarViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let week = ["Sun", "Mon", "Tus", "Wed", "Thu", "Fri", "Sat"]
@@ -167,7 +159,7 @@ extension ViewController: UICollectionViewDataSource {
     
 }
 
-extension ViewController: UICollectionViewDelegateFlowLayout {
+extension CalendarViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView.tag {
@@ -179,7 +171,6 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
             let screenWidth = view.frame.width
             let cellWidth = (screenWidth - 6 * lineWidth) / 7
             let cellHeight = (screenWidth - 7 * lineWidth) / 6 + 2
-//            print(cellWidth,cellHeight)
             return CGSize(width: cellWidth, height: cellHeight)
         }
     }
@@ -204,19 +195,19 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension ViewController: UITableViewDelegate {
+extension CalendarViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        mockData.count
+        data.count
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
-extension ViewController: UITableViewDataSource {
+extension CalendarViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! ToDoTableViewCell
-        cell.titleLabel.text = "\(mockData[indexPath.row].name)"
+        cell.titleLabel.text = "\(data[indexPath.row].name)"
         return cell
     }
 }
