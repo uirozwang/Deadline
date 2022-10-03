@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ToDoTableViewCell: UITableViewCell {
+class CalendarEventTableViewCell: UITableViewCell {
     
     @IBOutlet var colorView: UIView! {
         didSet {

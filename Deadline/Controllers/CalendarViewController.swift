@@ -12,7 +12,7 @@ class CalendarViewController: UIViewController {
     
     @IBOutlet var weekCollectionView: UICollectionView!
     @IBOutlet var dayCollectionView: UICollectionView!
-    @IBOutlet var toDoTableView: UITableView!
+    @IBOutlet var tableView: UITableView!
     
     @IBOutlet var dateLabel: UILabel!
     
@@ -29,6 +29,7 @@ class CalendarViewController: UIViewController {
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31]
     var data = [ToDoEvent]()
+    var categoryData = [ToDoCategory]()
     
     let lineWidth: CGFloat = 2
     
@@ -49,8 +50,8 @@ class CalendarViewController: UIViewController {
         dayCollectionView.dataSource = self
         weekCollectionView.delegate = self
         weekCollectionView.dataSource = self
-        toDoTableView.delegate = self
-        toDoTableView.dataSource = self
+        tableView.delegate = self
+        tableView.dataSource = self
         readData()
         
     }
@@ -97,16 +98,27 @@ class CalendarViewController: UIViewController {
     }
     
     func readData() {
-        if let data = UserDefaults.standard.data(forKey: "test") {
+        
+        if let data = UserDefaults.standard.data(forKey: "data") {
             do {
-                let data = try JSONDecoder().decode(ToDoEvent.self, from: data)
-                self.data.append(data)
+                let data = try JSONDecoder().decode([ToDoEvent].self, from: data)
+                self.data = data
             } catch {
                 print("Decoding error:", error)
             }
         }
+        
+        if let categoryData = UserDefaults.standard.data(forKey: "category") {
+            do {
+                let categoryData = try JSONDecoder().decode([ToDoCategory].self, from: categoryData)
+                self.categoryData = categoryData
+            } catch {
+                print("Decoding error:", error)
+            }
+        }
+        
     }
-
+    
 }
 
 extension CalendarViewController: UICollectionViewDelegate {
@@ -206,8 +218,18 @@ extension CalendarViewController: UITableViewDelegate {
 
 extension CalendarViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! ToDoTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! CalendarEventTableViewCell
         cell.titleLabel.text = "\(data[indexPath.row].name)"
+        if let categoryIndex = data[indexPath.row].category {
+            let signR = categoryData[categoryIndex].signR
+            let signG = categoryData[categoryIndex].signG
+            let signB = categoryData[categoryIndex].signB
+            let color = UIColor(red: signR/255,
+                                green: signG/255,
+                                blue: signB/255,
+                                alpha: 1.0)
+            cell.colorView.backgroundColor = color
+        }
         return cell
     }
 }

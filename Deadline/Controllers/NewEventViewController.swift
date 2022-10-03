@@ -9,10 +9,12 @@ import UIKit
 
 // 需要一個protocol來通知viewcontroller更新資料，重新讀取or打包替換
 protocol NewEventViewControllerDelegate {
-    func tappedSaveButton()
+    func newEventVCTappedSaveButton(state: String, data: ToDoEvent, categoryData: [ToDoCategory])
 }
 
 class NewEventViewController: UIViewController {
+    
+    var delegate: NewEventViewControllerDelegate?
     
     @IBOutlet var scrollView: UIScrollView! {
         didSet {
@@ -27,34 +29,23 @@ class NewEventViewController: UIViewController {
         }
     }
     @IBOutlet var titleTextField: UITextField!
+    @IBOutlet var colorButton: UIButton!
     @IBOutlet var saveButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var positionView: UIView!
     
     @IBAction func tappedSaveButton(sender: UIButton) {
         
-        var date = datePicker.date
+        let date = datePicker.date
         // 修改時區失敗，暫時先自己加8小時
-        date = date + 8*3600
+//        date = date + 8*3600
         data.deadline = date
-        
-        if let indexPath = indexPath {
-            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-            print(indexPath)
-        }
-        
         if let text = titleTextField.text {
             data.name = text
         }
+        delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
         
-        do {
-            let data = try JSONEncoder().encode(data)
-            UserDefaults.standard.set(data, forKey: "test")
-        } catch {
-            print("Encoding error", error)
-        }
-        print(NSHomeDirectory())
-        readData()
+        state = ""
     }
     
     @IBAction func tappedJustView(_ sender: Any) {
@@ -63,36 +54,21 @@ class NewEventViewController: UIViewController {
     
     var indexPath: IndexPath?
     
-    var data = ToDoEvent(name: "test123 title",
+    var data = ToDoEvent(category: 0,
+                         name: "",
                          section: [ToDoSection(section: 0,
-                                               detail: [ToDoDetail(detailName: "test detail1",
-                                                                   needHour: 0,
-                                                                   needMin: 0),
-                                                        ToDoDetail(detailName: "test detail2",
-                                                                   needHour: 0,
-                                                                   needMin: 0)
-                                               ]
-                                              ),
-                                   ToDoSection(section: 1,
-                                               detail: [ToDoDetail(detailName: "test detail1",
-                                                                   needHour: 0,
-                                                                   needMin: 0),
-                                                        ToDoDetail(detailName: "test detail2",
-                                                                   needHour: 0,
-                                                                   needMin: 0)
-                                               ]
-                                              ),
-                                   ToDoSection(section: 2,
-                                               detail: [ToDoDetail(detailName: "test detail1",
-                                                                   needHour: 0,
-                                                                   needMin: 0),
-                                                        ToDoDetail(detailName: "test detail2",
+                                               detail: [ToDoDetail(detailName: "",
                                                                    needHour: 0,
                                                                    needMin: 0)
                                                ]
                                               )
                          ],
                          deadline: Date())
+    
+    var categoryData = [ToDoCategory]()
+    
+    var state = ""
+    
     // MARK: - ViewLifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,15 +88,24 @@ class NewEventViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardEvent), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardEvent), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        readData()
         titleTextField.text = data.name
         datePicker.date = data.deadline
-        
+        updateColorView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(UIResponder.keyboardWillChangeFrameNotification)
         NotificationCenter.default.removeObserver(UIResponder.keyboardWillHideNotification)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showeventcolor" {
+            if let colorVC = segue.destination as? NewEventColorViewController {
+                colorVC.categoryData = self.categoryData
+                colorVC.categoryPosition = self.data.category
+                colorVC.delegate = self
+            }
+        }
     }
     
     // MARK: - Many Function
@@ -170,19 +155,19 @@ class NewEventViewController: UIViewController {
         }
     }
     
+    private func updateColorView() {
+        if let category = data.category {
+            let color = UIColor(red: categoryData[category].signR/255,
+                                green: categoryData[category].signG/255,
+                                blue: categoryData[category].signB/255,
+                                alpha: 1.0)
+            colorButton.backgroundColor = color
+        }
+    }
+    
     // 失效，因為觸控事件被tableview接收了
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
-    }
-    
-    func readData() {
-        if let data = UserDefaults.standard.data(forKey: "test") {
-            do {
-                self.data = try JSONDecoder().decode(ToDoEvent.self, from: data)
-            } catch {
-                print("Decoding error:", error)
-            }
-        }
     }
         
 }
@@ -331,5 +316,14 @@ extension NewEventViewController: EventDetailTableViewFooterViewBottomDelegate {
     func tappedFooterViewAddSectionButton(_ view: EventDetailTableViewFooterViewBottom, section: Int) {
         data.section.append(ToDoSection(section: data.section.count, detail: [ToDoDetail(detailName: "", needHour: 0)]))
         tableView.reloadData()
+    }
+}
+
+extension NewEventViewController: NewEventColorViewControllerDelegate {
+    func tappedColorViewSaveButton(position: Int, data: [ToDoCategory]) {
+        self.categoryData = data
+        self.data.category = position
+        updateColorView()
+        print(#function)
     }
 }
