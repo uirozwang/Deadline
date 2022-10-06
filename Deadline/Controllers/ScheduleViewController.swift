@@ -15,13 +15,19 @@ struct Position {
 
 class ScheduleViewController: UIViewController {
     
-    @IBOutlet var collectionView: UICollectionView!
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet var eventTableView: UITableView!
+    @IBOutlet var dateTableView: UITableView!
+    
+    @IBOutlet var yearPopUpButton: UIButton!
+    @IBOutlet var monthPopUpButton: UIButton!
+    @IBOutlet var dayPopUpButton: UIButton!
     
     @IBAction func tappedButton(_ sender: Any) {
         print(#function)
-        collectionView.scrollToItem(at: IndexPath(item: 2, section: 0), at: .left, animated: true)
     }
+    
+    var data = [ToDoEvent]()
+    var index: Int?
     
     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31]
@@ -30,90 +36,69 @@ class ScheduleViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        tableView.delegate = self
-        tableView.dataSource = self
+        eventTableView.delegate = self
+        eventTableView.dataSource = self
+        dateTableView.delegate = self
+        dateTableView.dataSource = self
+        updateDatePopUpButton()
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
-}
-
-extension ScheduleViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = view.frame.width / 2
-        let height = collectionView.frame.height
-        return CGSize(width: width, height: height)
-    }
-    
-}
-
-extension ScheduleViewController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        collectionView.deselectItem(at: indexPath, animated: true)
+    // MARK: - Many Functions
+    private func updateDatePopUpButton() {
+        // yearPopUpButton
+        let yearActions: [UIAction] = {
+            var actions = [UIAction]()
+            for i in 0..<101 {
+                let action = UIAction(title: "\(2000+i)",
+                                      state: position.year==2000+i ? .on:.off,
+                                      handler: { action in
+                    self.position.year = 2000+i
+                    self.updateDatePopUpButton()
+                })
+                actions.append(action)
+            }
+            return actions
+        }()
+        yearPopUpButton.menu = UIMenu(children: yearActions)
+        // monthPopUpButton
+        let monthActions: [UIAction] = {
+            var actions = [UIAction]()
+            for i in 0..<months.count {
+                let action = UIAction(title: "\(months[i])",
+                                      state: position.month==1+i ? .on:.off,
+                                      handler: { action in
+                    self.position.month = 1+i
+                    
+                    if self.position.day > self.days[i] {
+                        self.position.day = 1
+                    }
+                    
+                    self.updateDatePopUpButton()
+                    // 可能需要做當月天數檢查
+                })
+                actions.append(action)
+            }
+            return actions
+        }()
+        monthPopUpButton.menu = UIMenu(children: monthActions)
+        // dayPopUpButton
+        let dayActions: [UIAction] = {
+            var actions = [UIAction]()
+            for i in 0..<days[position.month-1] {
+                let action = UIAction(title: "\(i+1)",
+                                      state: position.day==1+i ? .on:.off,
+                                      handler: { action in
+                    self.position.day = 1+i
+                    self.updateDatePopUpButton()
+                })
+                actions.append(action)
+            }
+            return actions
+        }()
+        dayPopUpButton.menu = UIMenu(children: dayActions)
         
     }
-    
 }
-
-extension ScheduleViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "scheduledatecell", for: indexPath) as! ScheduleDateCollectionViewCell
-        switch indexPath.row {
-        case 0:
-            var array: [String] = []
-            for i in 0..<101 {
-                array.append("\(2000+i)")
-            }
-            cell.textArray = array
-        case 1:
-            cell.textArray = months
-        case 2:
-            var array: [String] = []
-            for i in 0..<days[position.month-1] {
-                array.append("\(i+1)")
-            }
-            cell.textArray = array
-        case 3:
-            var array: [String] = []
-            for i in 0..<24 {
-                array.append("\(i)")
-            }
-            cell.textArray = array
-        default:
-            print("ScheduleCollectionView IndexPath OutOfIndex.")
-        }
-        cell.delegate = self
-        // 可能是多tableView的問題，需要在這刷新才能正常讀取資料
-        // 不過如果indexPath未超過範圍，有可能會導致tableView停在之前另一個tableView停的位置
-        cell.tableView.reloadData()
-        return cell
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
-    }
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        4
-    }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        0
-    }
-    
-}
-
+// MARK: - Extensions
 extension ScheduleViewController: UITableViewDelegate {
     
 }
@@ -121,24 +106,55 @@ extension ScheduleViewController: UITableViewDelegate {
 extension ScheduleViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        3
+        if tableView == dateTableView {
+            return 1
+        }
+        if tableView == eventTableView,
+           let index = index{
+            return data[index].section.count
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        20
+        if tableView == dateTableView {
+            return 96
+        }
+        if tableView == eventTableView,
+           let index = index {
+            return data[index].section[section].detail?.count ?? 0
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "scheduledetailcell", for: indexPath) as! ScheduleEventDetailTableViewCell
-        cell.detailNameLabel.text = "Detail\(indexPath)"
         
-        return cell
+        if tableView == dateTableView {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "scheduledatecell", for: indexPath) as! ScheduleDateTableViewCell
+            cell.dateLabel.text = "\(indexPath.row/4):\(indexPath.row%4*15)"
+            if indexPath.row%4 == 0 {
+                cell.dateLabel.text = cell.dateLabel.text! + "0"
+            }
+            if indexPath.row/4 < 10 {
+                cell.dateLabel.text = "0" + cell.dateLabel.text!
+            }
+            return cell
+        }
+        
+        if tableView == eventTableView {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "scheduledetailcell", for: indexPath) as! ScheduleEventDetailTableViewCell
+            if let index = index {
+                let name = data[index].section[indexPath.section].detail![indexPath.row].detailName
+                cell.detailNameLabel.text = name
+            }
+            return cell
+        }
+        return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
         
 }
 
-extension ScheduleViewController: ScheduleDateCollectionViewCellDelegate {
-    func tappedScheduleDateCollectionViewCell(indexPath: IndexPath) {
-        
-    }
-}

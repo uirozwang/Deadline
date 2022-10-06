@@ -29,7 +29,6 @@ class EventsViewController: UIViewController {
         super.viewDidLoad()
         readData()
         checkCategoryData()
-        print("categorty.count: \(categoryData.count)")
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -37,7 +36,6 @@ class EventsViewController: UIViewController {
             if let editVC = segue.destination as? NewEventViewController {
                 if let cell = sender as? EventsTableViewCell {
                     if let indexPath = tableView.indexPath(for: cell) {
-                        print(indexPath)
                         editVC.data = data[indexPath.row]
                         editVC.categoryData = self.categoryData
                         editVC.state = "edit"
@@ -51,6 +49,16 @@ class EventsViewController: UIViewController {
                 newVC.state = "new"
                 newVC.categoryData = self.categoryData
                 newVC.delegate = self
+            }
+        }
+        if segue.identifier == "scheduleevent" {
+            if let scheduleVC = segue.destination as? ScheduleViewController {
+                // 應該是Button
+                if let sender = sender as? UIButton {
+                    let index = sender.tag - 1000
+                    scheduleVC.data = data
+                    scheduleVC.index = index
+                }
             }
         }
     }
@@ -87,14 +95,14 @@ class EventsViewController: UIViewController {
     
     private func saveData() {
         do {
-            print(data.count)
+//            print(data.count)
             let data = try JSONEncoder().encode(data)
             UserDefaults.standard.set(data, forKey: "data")
         } catch {
             print("Encoding error", error)
         }
         do {
-            print(categoryData.count)
+//            print(categoryData.count)
             let data = try JSONEncoder().encode(categoryData)
             UserDefaults.standard.set(data, forKey: "category")
         } catch {
@@ -141,6 +149,7 @@ extension EventsViewController: UITableViewDataSource {
         cell.dateLabel.text = dateFormatter.string(from: date)
         dateFormatter.dateFormat = "HH:mm"
         cell.timeLabel.text = dateFormatter.string(from: date)
+        cell.scheduleButton.tag = indexPath.row + 1000
         
         return cell
         
@@ -164,7 +173,6 @@ extension EventsViewController: UITableViewDataSource {
 
 extension EventsViewController: NewEventViewControllerDelegate {
     func newEventVCTappedSaveButton(state: String, data: ToDoEvent, categoryData: [ToDoCategory]) {
-        print(#function)
         if state == "edit" {
             self.data[indexPath.row] = data
             tableView.reloadData()

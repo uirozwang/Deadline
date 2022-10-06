@@ -82,8 +82,8 @@
 				C766909528DC6DB40065D2F9 /* EventsViewController.swift */,
 				C797700E28C8B47F00244A64 /* NewEventViewController.swift */,
 				C766909728E2D6520065D2F9 /* NewEventColorViewController.swift */,
-				C727915228E346A800C4EFBD /* SettingViewController.swift */,
 				C727915428EA9F6300C4EFBD /* ScheduleViewController.swift */,
+				C727915228E346A800C4EFBD /* SettingViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";

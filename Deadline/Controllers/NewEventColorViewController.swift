@@ -126,7 +126,6 @@ class NewEventColorViewController: UIViewController {
         switch sender.tag {
         case 1:
             if let text = sender.text {
-                print(text)
                 redSlider.value = Float(text) ?? 0
                 if let value = Float(text),
                    value > 255 {
@@ -136,7 +135,6 @@ class NewEventColorViewController: UIViewController {
             }
         case 2:
             if let text = sender.text {
-                print(text)
                 greenSlider.value = Float(text) ?? 0
                 if let value = Float(text),
                    value > 255 {
@@ -146,7 +144,6 @@ class NewEventColorViewController: UIViewController {
             }
         case 3:
             if let text = sender.text {
-                print(text)
                 blueSlider.value = Float(text) ?? 0
                 if let value = Float(text),
                    value > 255 {

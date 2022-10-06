@@ -36,6 +36,8 @@ class NewEventViewController: UIViewController {
     
     @IBAction func tappedSaveButton(sender: UIButton) {
         
+        resignFirstResponder()
+        
         let date = datePicker.date
         // 修改時區失敗，暫時先自己加8小時
 //        date = date + 8*3600
@@ -46,6 +48,7 @@ class NewEventViewController: UIViewController {
         delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
         
         state = ""
+        print(#function)
     }
     
     @IBAction func tappedJustView(_ sender: Any) {
@@ -196,7 +199,6 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                             self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
                             // 當PopUpButton的menu朝上的時候，tableView.reloadData()會導致動畫錯誤
                             tableView.reloadData()
-                            print("tableView.reloadData()")
                         }
                     })
                     actions.append(action)
@@ -206,7 +208,6 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                         if i == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
                             self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
                             tableView.reloadData()
-                            print("tableView.reloadData()")
                         }
                     })
                     actions.append(action)
@@ -225,7 +226,6 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                         if self.data.section[indexPath.section].detail![indexPath.row].needHour == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
                             self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
                             tableView.reloadData()
-                            print("tableView.reloadData()")
                         }
                     })
                     actions.append(action)
@@ -235,7 +235,6 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                         if self.data.section[indexPath.section].detail![indexPath.row].needHour == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
                             self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
                             tableView.reloadData()
-                            print("tableView.reloadData()")
                         }
                     })
                     actions.append(action)
@@ -280,16 +279,14 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension NewEventViewController: EventDetailTableViewCellDelegate {
-    // 還沒想到辦法觸法這個
+    // 還沒想到辦法觸發這個
     func changedTimePopUpButton(_ cell: EventDetailTableViewCell) {
         tableView.reloadData()
         print(#function)
     }
     
     func tappedDetailTitleTextField(_ cell: EventDetailTableViewCell) {
-        
         indexPath = tableView.indexPath(for: cell)
-        
     }
     
     func completeDetailTitleTextField(_ cell: EventDetailTableViewCell, text: String) {
@@ -324,6 +321,5 @@ extension NewEventViewController: NewEventColorViewControllerDelegate {
         self.categoryData = data
         self.data.category = position
         updateColorView()
-        print(#function)
     }
 }

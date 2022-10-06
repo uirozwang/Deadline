@@ -25,8 +25,11 @@ class EventDetailTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         detailTitleTextField.addTarget(self, action: #selector(didBeganEditing(_:)), for: .editingDidBegin)
+        /*
         detailTitleTextField.addTarget(self, action: #selector(didEndEditing(_:)), for: .editingDidEnd)
         detailTitleTextField.addTarget(self, action: #selector(didEndEditingOnExit(_:)), for: .editingDidEndOnExit)
+         */
+        detailTitleTextField.addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
         hourPopUpButton.addTarget(self, action: #selector(didTimePopUpButtonValueChanged(_:)), for: .valueChanged)
         minutePopUpButton.addTarget(self, action: #selector(didTimePopUpButtonValueChanged(_:)), for: .valueChanged)
         hourPopUpButton.showsMenuAsPrimaryAction = true
@@ -41,14 +44,23 @@ class EventDetailTableViewCell: UITableViewCell {
     
     @objc func didBeganEditing(_ sender: UITextField) {
         delegate?.tappedDetailTitleTextField(self)
+        print(#function)
     }
+    /*
     @objc func didEndEditing(_ sender: UITextField) {
         delegate?.completeDetailTitleTextField(self, text: sender.text ?? "")
+        print(sender.text)
+        print(#function)
     }
     @objc func didEndEditingOnExit(_ sender: UITextField) {
+        print(#function)
     }
+     */
     @objc func didTimePopUpButtonValueChanged(_ sender: UIButton) {
         delegate?.changedTimePopUpButton(self)
+    }
+    @objc func editingChanged(_ sender: UITextField) {
+        delegate?.completeDetailTitleTextField(self, text: sender.text ?? "")
     }
 
 }

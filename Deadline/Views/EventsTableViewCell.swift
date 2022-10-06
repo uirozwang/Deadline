@@ -7,13 +7,23 @@
 
 import UIKit
 
+protocol EventsTableViewCellDelegate {
+    func tappedEventCellScheduleButton(_ sender: EventsTableViewCell)
+}
+
 class EventsTableViewCell: UITableViewCell {
+    
+    var delegate: EventsTableViewCellDelegate?
     
     @IBOutlet var colorView: UIView!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var scheduleButton: UIButton!
+    
+    @IBAction func tappedScheduleButton(_ sender: UIButton) {
+        delegate?.tappedEventCellScheduleButton(self)
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
