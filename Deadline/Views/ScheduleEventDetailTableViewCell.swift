@@ -10,6 +10,7 @@ import UIKit
 class ScheduleEventDetailTableViewCell: UITableViewCell {
     
     @IBOutlet var detailNameLabel: UILabel!
+    @IBOutlet var checkImageView: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()

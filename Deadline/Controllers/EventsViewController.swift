@@ -27,7 +27,7 @@ class EventsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        readData()
+        getData()
         checkCategoryData()
     }
     
@@ -71,7 +71,7 @@ class EventsViewController: UIViewController {
         }
     }
     
-    private func readData() {
+    private func getData() {
         
         if let data = UserDefaults.standard.data(forKey: "data") {
             do {

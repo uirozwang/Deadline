@@ -25,15 +25,18 @@ class ScheduleViewController: UIViewController {
     @IBAction func tappedButton(_ sender: Any) {
         print(#function)
     }
-    
+    // 為了顯示全部已知的排程，索性先把全部資料帶進來
     var data = [ToDoEvent]()
+    // 當前正在排程的資料序號
     var index: Int?
+    
+    var position = Position(year: 2019, month: 9, day: 20)
+    // 準備要排上去的detail位置
+    var schedulePosition: IndexPath?
     
     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31]
     
-    var position = Position(year: 2019, month: 9, day: 20)
-
     override func viewDidLoad() {
         super.viewDidLoad()
         eventTableView.delegate = self
@@ -73,7 +76,6 @@ class ScheduleViewController: UIViewController {
                     }
                     
                     self.updateDatePopUpButton()
-                    // 可能需要做當月天數檢查
                 })
                 actions.append(action)
             }
@@ -83,14 +85,26 @@ class ScheduleViewController: UIViewController {
         // dayPopUpButton
         let dayActions: [UIAction] = {
             var actions = [UIAction]()
-            for i in 0..<days[position.month-1] {
-                let action = UIAction(title: "\(i+1)",
-                                      state: position.day==1+i ? .on:.off,
-                                      handler: { action in
-                    self.position.day = 1+i
-                    self.updateDatePopUpButton()
-                })
-                actions.append(action)
+            if position.year%4 != 0 && position.month == 2 {
+                for i in 0..<28 {
+                    let action = UIAction(title: "\(i+1)",
+                                          state: position.day==1+i ? .on:.off,
+                                          handler: { action in
+                        self.position.day = 1+i
+                        self.updateDatePopUpButton()
+                    })
+                    actions.append(action)
+                }
+            } else {
+                for i in 0..<days[position.month-1] {
+                    let action = UIAction(title: "\(i+1)",
+                                          state: position.day==1+i ? .on:.off,
+                                          handler: { action in
+                        self.position.day = 1+i
+                        self.updateDatePopUpButton()
+                    })
+                    actions.append(action)
+                }
             }
             return actions
         }()
@@ -146,6 +160,7 @@ extension ScheduleViewController: UITableViewDataSource {
             if let index = index {
                 let name = data[index].section[indexPath.section].detail![indexPath.row].detailName
                 cell.detailNameLabel.text = name
+                cell.checkImageView.image = self.schedulePosition == indexPath ? UIImage(systemName: "checkmark") : nil
             }
             return cell
         }
@@ -154,7 +169,18 @@ extension ScheduleViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        if tableView == eventTableView {
+            schedulePosition = schedulePosition != indexPath ? indexPath : nil
+            eventTableView.reloadData()
+        }
+        if tableView == dateTableView,
+           let schedulePosition = self.schedulePosition {
+            data[index!].section[schedulePosition.section].detail![schedulePosition.row].toDoYear = position.year
+            data[index!].section[schedulePosition.section].detail![schedulePosition.row].toDoMonth = position.month
+            data[index!].section[schedulePosition.section].detail![schedulePosition.row].toDoDay = position.day
+            data[index!].section[schedulePosition.section].detail![schedulePosition.row].toDoHour = indexPath.row/4
+            data[index!].section[schedulePosition.section].detail![schedulePosition.row].toDoMinute = indexPath.row%4*15
+        }
     }
-        
 }
 

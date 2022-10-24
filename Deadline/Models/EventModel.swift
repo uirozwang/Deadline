@@ -41,3 +41,10 @@ struct ToDoCategory: Codable {
     var signG: CGFloat = 0.0
     var signB: CGFloat = 0.0
 }
+
+struct CalendarDay {
+    var name: String?
+    var signR: CGFloat?
+    var signG: CGFloat?
+    var signB: CGFloat?
+}

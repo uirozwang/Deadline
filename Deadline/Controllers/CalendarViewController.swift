@@ -41,7 +41,10 @@ class CalendarViewController: UIViewController {
     var positionYear = 2022
     var positionMonth = 11
     var positionDay = 20
+    
+    var table = [[[CalendarDay]]]()
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,8 +55,9 @@ class CalendarViewController: UIViewController {
         weekCollectionView.dataSource = self
         tableView.delegate = self
         tableView.dataSource = self
-        readData()
-        
+        getData()
+        initialCalendarTable()
+        customCalendarTable()
     }
     
     override func viewDidLayoutSubviews() {
@@ -97,7 +101,7 @@ class CalendarViewController: UIViewController {
         dayCollectionView.reloadData()
     }
     
-    func readData() {
+    func getData() {
         
         if let data = UserDefaults.standard.data(forKey: "data") {
             do {
@@ -117,6 +121,30 @@ class CalendarViewController: UIViewController {
             }
         }
         
+    }
+    
+    func initialCalendarTable() {
+        for i in 0..<101 {
+            var year = [[CalendarDay]]()
+            for j in 0..<12 {
+                var month = [CalendarDay]()
+                for k in 0..<days[j] {
+                    var day: CalendarDay
+                    if i%4 != 0 && j==1 && k==28 {
+                        break
+                    } else {
+                        day = CalendarDay()
+                        month.append(day)
+                    }
+                }
+                year.append(month)
+            }
+            table.append(year)
+        }
+    }
+    
+    func customCalendarTable() {
+        print(data)
     }
     
 }
@@ -146,7 +174,7 @@ extension CalendarViewController: UICollectionViewDataSource {
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "daycell", for: indexPath) as! CalendarDayCollectionViewCell
-            cell.backgroundColor = .systemCyan
+            cell.backgroundColor = .systemBackground
             let firstDayPosition = checkWeekday(year: positionYear,
                                                 month: positionMonth,
                                                 day: 1)
