@@ -58,6 +58,7 @@ class EventsViewController: UIViewController {
                     let index = sender.tag - 1000
                     scheduleVC.data = data
                     scheduleVC.index = index
+                    scheduleVC.delegate = self
                 }
             }
         }
@@ -175,6 +176,7 @@ extension EventsViewController: NewEventViewControllerDelegate {
     func newEventVCTappedSaveButton(state: String, data: ToDoEvent, categoryData: [ToDoCategory]) {
         if state == "edit" {
             self.data[indexPath.row] = data
+            print(data)
             tableView.reloadData()
         }
         if state == "new" {
@@ -184,5 +186,14 @@ extension EventsViewController: NewEventViewControllerDelegate {
         self.categoryData = categoryData
         tableView.reloadData()
         saveData()
+    }
+}
+
+extension EventsViewController: ScheduleViewControllerDelegate {
+    func scheduleVCTappedSaveButton(data: [ToDoEvent]) {
+        self.data = data
+        tableView.reloadData()
+        saveData()
+        print(#function)
     }
 }

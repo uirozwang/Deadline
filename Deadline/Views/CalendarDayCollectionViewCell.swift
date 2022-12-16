@@ -9,4 +9,5 @@ import UIKit
 
 class CalendarDayCollectionViewCell: UICollectionViewCell {
     @IBOutlet var textLabel: UILabel!
+    @IBOutlet weak var drawView: CalendarDayCollectionViewCellDrawView!
 }

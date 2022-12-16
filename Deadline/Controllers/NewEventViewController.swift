@@ -28,48 +28,31 @@ class NewEventViewController: UIViewController {
         didSet {
         }
     }
+    @IBOutlet var warningLabel: UILabel!
     @IBOutlet var titleTextField: UITextField!
     @IBOutlet var colorButton: UIButton!
     @IBOutlet var saveButton: UIButton!
     @IBOutlet var tableView: UITableView!
     @IBOutlet var positionView: UIView!
     
+    //按下button後，shouldPerformSegue(witIdentifier:sender:)會在tappedSaveButton之前執行，會導致名稱跟時間沒存到，function先保留
     @IBAction func tappedSaveButton(sender: UIButton) {
-        
-        resignFirstResponder()
-        
-        let date = datePicker.date
-        // 修改時區失敗，暫時先自己加8小時
-//        date = date + 8*3600
-        data.deadline = date
-        if let text = titleTextField.text {
-            data.name = text
-        }
-        delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
-        
-        state = ""
         print(#function)
+        resignFirstResponder()
     }
     
     @IBAction func tappedJustView(_ sender: Any) {
         view.endEditing(true)
     }
-    
     var indexPath: IndexPath?
     
     var data = ToDoEvent(category: 0,
                          name: "",
-                         section: [ToDoSection(section: 0,
-                                               detail: [ToDoDetail(detailName: "",
-                                                                   needHour: 0,
-                                                                   needMin: 0)
-                                               ]
-                                              )
-                         ],
+                         detail: [[ToDoDetail(detailName:"detail")]],
                          deadline: Date())
     
     var categoryData = [ToDoCategory]()
-    
+    // 用來記錄是新增還是修改
     var state = ""
     
     // MARK: - ViewLifeCycle
@@ -91,6 +74,7 @@ class NewEventViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardEvent), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardEvent), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        warningLabel.text = ""
         titleTextField.text = data.name
         datePicker.date = data.deadline
         updateColorView()
@@ -102,6 +86,7 @@ class NewEventViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
         if segue.identifier == "showeventcolor" {
             if let colorVC = segue.destination as? NewEventColorViewController {
                 colorVC.categoryData = self.categoryData
@@ -109,6 +94,37 @@ class NewEventViewController: UIViewController {
                 colorVC.delegate = self
             }
         }
+        
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        print(#function)
+        if identifier == "neweventsavebutton" {
+            for details in data.detail {
+                for detail in details {
+                    if detail.detailName == "" {
+                        print("empty textfield")
+                        warningLabel.text = "Have empty textfield."
+                        return false
+                    }
+                    if detail.needHour == 0 && detail.needMin == 0 {
+                        print("Need time must be not zero.")
+                        warningLabel.text = "Need time must be not zero."
+                        return false
+                    }
+                }
+            }
+        }
+        let date = datePicker.date
+        // 修改時區失敗，暫時先自己加8小時
+//        date = date + 8*3600
+        data.deadline = date
+        if let text = titleTextField.text {
+            data.name = text
+        }
+        delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
+        state = ""
+        return true
     }
     
     // MARK: - Many Function
@@ -180,23 +196,23 @@ class NewEventViewController: UIViewController {
 extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        data.section.count
+        data.detail.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "detailcell", for: indexPath) as! EventDetailTableViewCell
         cell.delegate = self
         cell.numberLabel.text = "\(indexPath.row+1)"
         cell.detailTitleTextField.tag = (indexPath.section * 1000) + indexPath.row
-        cell.detailTitleTextField.text = data.section[indexPath.section].detail![indexPath.row].detailName
+        cell.detailTitleTextField.text = data.detail[indexPath.section][indexPath.row].detailName
         
         let hourActions: [UIAction] = {
             var actions = [UIAction]()
             for i in 0..<5 {
-                if self.data.section[indexPath.section].detail![indexPath.row].needHour == i {
+                if self.data.detail[indexPath.section][indexPath.row].needHour == i {
                     let action = UIAction(title: "\(i)", state: .on, handler: { action in
-                        self.data.section[indexPath.section].detail![indexPath.row].needHour = i
-                        if i == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
-                            self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
+                        self.data.detail[indexPath.section][indexPath.row].needHour = i
+                        if i == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
                             // 當PopUpButton的menu朝上的時候，tableView.reloadData()會導致動畫錯誤
                             tableView.reloadData()
                         }
@@ -204,9 +220,9 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                     actions.append(action)
                 } else {
                     let action = UIAction(title: "\(i)", handler: { action in
-                        self.data.section[indexPath.section].detail![indexPath.row].needHour = i
-                        if i == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
-                            self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
+                        self.data.detail[indexPath.section][indexPath.row].needHour = i
+                        if i == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
@@ -220,20 +236,20 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         let minActions: [UIAction] = {
             var actions = [UIAction]()
             for i in 0..<4 {
-                if self.data.section[indexPath.section].detail![indexPath.row].needMin == 15*i {
+                if self.data.detail[indexPath.section][indexPath.row].needMin == 15*i {
                     let action = UIAction(title: "\(15*i)", state: .on, handler: { action in
-                        self.data.section[indexPath.section].detail![indexPath.row].needMin = 15*i
-                        if self.data.section[indexPath.section].detail![indexPath.row].needHour == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
-                            self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
+                        self.data.detail[indexPath.section][indexPath.row].needMin = 15*i
+                        if self.data.detail[indexPath.section][indexPath.row].needHour == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
                     actions.append(action)
                 } else {
                     let action = UIAction(title: "\(15*i)", handler: { action in
-                        self.data.section[indexPath.section].detail![indexPath.row].needMin = 15*i
-                        if self.data.section[indexPath.section].detail![indexPath.row].needHour == 4 && self.data.section[indexPath.section].detail![indexPath.row].needMin != 0 {
-                            self.data.section[indexPath.section].detail![indexPath.row].needMin = 0
+                        self.data.detail[indexPath.section][indexPath.row].needMin = 15*i
+                        if self.data.detail[indexPath.section][indexPath.row].needHour == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
@@ -246,7 +262,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.section[section].detail!.count
+        data.detail[section].count
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -255,7 +271,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         50
     }
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if section == data.section.count - 1 {
+        if section == data.detail.count - 1 {
             let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: "mySectionFooterBottom") as! EventDetailTableViewFooterViewBottom
             view.delegate = self
             view.addDetailButton.tag = section
@@ -269,7 +285,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         
-        if section == data.section.count - 1 {
+        if section == data.detail.count - 1 {
             return 92
         } else {
             return 50
@@ -291,7 +307,7 @@ extension NewEventViewController: EventDetailTableViewCellDelegate {
     
     func completeDetailTitleTextField(_ cell: EventDetailTableViewCell, text: String) {
         
-        data.section[indexPath!.section].detail![indexPath!.row].detailName = cell.detailTitleTextField.text!
+        data.detail[indexPath!.section][indexPath!.row].detailName = cell.detailTitleTextField.text!
         
     }
     
@@ -299,19 +315,19 @@ extension NewEventViewController: EventDetailTableViewCellDelegate {
 
 extension NewEventViewController: EventDetailTableViewFooterViewDelegate {
     func tappedFooterViewAddDetailButton(_ cell: EventDetailTableViewFooterView, section: Int) {
-        data.section[section].detail?.append(ToDoDetail(detailName: "", needHour: 0))
+        data.detail[section].append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
         tableView.reloadData()
     }
 }
 
 extension NewEventViewController: EventDetailTableViewFooterViewBottomDelegate {
-    
+
     func tappedFooterViewAddDetailButton(_ cell: EventDetailTableViewFooterViewBottom, section: Int) {
-        data.section[section].detail?.append(ToDoDetail(detailName: "", needHour: 0))
+        data.detail[section].append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
         tableView.reloadData()
     }
     func tappedFooterViewAddSectionButton(_ view: EventDetailTableViewFooterViewBottom, section: Int) {
-        data.section.append(ToDoSection(section: data.section.count, detail: [ToDoDetail(detailName: "", needHour: 0)]))
+        data.detail.append([ToDoDetail(detailName: "", needHour: 0, needMin: 0)])
         tableView.reloadData()
     }
 }

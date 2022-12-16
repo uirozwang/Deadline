@@ -25,11 +25,27 @@ class CalendarViewController: UIViewController {
     @IBAction func tappedDateRightButton(sender: UIButton) {
         monthAndYear(positive: true)
     }
+    @IBAction func animateFrame(_ sender: UIButton) {
+        let diceRoll = CGFloat(Int(arc4random_uniform(7))*30)
+        let circleEdge = CGFloat(200)
+        
+        // 直接指定 frame 布局
+        let statusView = CalendarDayCollectionViewCellDrawView(frame: CGRect(x: 50, y: diceRoll, width: circleEdge, height: circleEdge))
+        
+        view.addSubview(statusView)
+        
+        // 开始动画
+        statusView.animateCircle(duration: 1.0)
+    }
     
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31]
+    // 事項資料
     var data = [ToDoEvent]()
+    // 事項分類
     var categoryData = [ToDoCategory]()
+    // 行事曆表格，每一格15分鐘
+    var table = [[[[CalendarPartition]]]]()
     
     let lineWidth: CGFloat = 2
     
@@ -41,9 +57,6 @@ class CalendarViewController: UIViewController {
     var positionYear = 2022
     var positionMonth = 11
     var positionDay = 20
-    
-    var table = [[[CalendarDay]]]()
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +70,8 @@ class CalendarViewController: UIViewController {
         tableView.dataSource = self
         getData()
         initialCalendarTable()
-        customCalendarTable()
+        updateCalendarTable()
+//        print(table[22][11][5])
     }
     
     override func viewDidLayoutSubviews() {
@@ -71,9 +85,9 @@ class CalendarViewController: UIViewController {
         dateComponents.day = day
         dateComponents.month = month
         dateComponents.year = year
-
+        
         if let gregorianCalendar = NSCalendar(calendarIdentifier: .gregorian),
-            let date = gregorianCalendar.date(from: dateComponents as DateComponents) {
+           let date = gregorianCalendar.date(from: dateComponents as DateComponents) {
             let weekday = gregorianCalendar.component(.weekday, from: date)
             return weekday
         }
@@ -107,33 +121,37 @@ class CalendarViewController: UIViewController {
             do {
                 let data = try JSONDecoder().decode([ToDoEvent].self, from: data)
                 self.data = data
+//                print("get data")
             } catch {
                 print("Decoding error:", error)
             }
         }
-        
         if let categoryData = UserDefaults.standard.data(forKey: "category") {
             do {
                 let categoryData = try JSONDecoder().decode([ToDoCategory].self, from: categoryData)
                 self.categoryData = categoryData
+//                print("get category data")
             } catch {
                 print("Decoding error:", error)
             }
         }
         
     }
-    
+    // 每天切成96塊
     func initialCalendarTable() {
         for i in 0..<101 {
-            var year = [[CalendarDay]]()
+            var year = [[[CalendarPartition]]]()
             for j in 0..<12 {
-                var month = [CalendarDay]()
+                var month = [[CalendarPartition]]()
                 for k in 0..<days[j] {
-                    var day: CalendarDay
+                    var day = [CalendarPartition]()
                     if i%4 != 0 && j==1 && k==28 {
                         break
                     } else {
-                        day = CalendarDay()
+                        for _ in 0..<96 {
+                            let partition = CalendarPartition()
+                            day.append(partition)
+                        }
                         month.append(day)
                     }
                 }
@@ -142,9 +160,45 @@ class CalendarViewController: UIViewController {
             table.append(year)
         }
     }
-    
-    func customCalendarTable() {
-        print(data)
+    // 把事項的data填進table
+    func updateCalendarTable() {
+        for i in 0..<data.count {
+            for j in 0..<data[i].detail.count {
+                for k in 0..<data[i].detail[j].count {
+                    if data[i].detail[j][k].toDoYear != nil {
+                        if var year = data[i].detail[j][k].toDoYear,
+                           var month = data[i].detail[j][k].toDoMonth,
+                           var day = data[i].detail[j][k].toDoDay,
+                           let hour = data[i].detail[j][k].toDoHour,
+                           let min = data[i].detail[j][k].toDoMinute,
+                           let needHour = data[i].detail[j][k].needHour,
+                           let needMin = data[i].detail[j][k].needMin {
+                            let needTime = needHour * 4 + needMin / 15
+                            for i in 0..<needTime {
+                                if hour*4+min/15+i==96 {
+                                    day = day + 1
+                                }
+                                if i%4 != 0 && j == 1  && day == 27{
+                                    day = 1
+                                    month = month + 1
+                                }
+                                if day > days[j] {
+                                    day = 1
+                                    month = month + 1
+                                }
+                                if month > 11 {
+                                    month = 1
+                                    year = year + 1
+                                }
+                                table[year][month][day][hour*4+min/15+i].eventIndex = i
+                                table[year][month][day][hour*4+min/15+i].detailSection = j
+                                table[year][month][day][hour*4+min/15+i].detailRow = k
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
 }
@@ -185,6 +239,47 @@ extension CalendarViewController: UICollectionViewDataSource {
                     cell.textLabel.text = ""
                 } else {
                     cell.textLabel.text = "\(indexPath.row-firstDayPosition+2)"
+                    
+                    
+                    // 統整各分類的數量
+                    let year = positionYear - 2001
+                    let month = positionMonth - 1
+                    let day = positionDay - 1
+                    
+                    var preIndexCount: [Int] = []
+                    var indexCount: [CGFloat] = []
+                    var signR: [CGFloat] = []
+                    var signG: [CGFloat] = []
+                    var signB: [CGFloat] = []
+                    
+                    for _ in 0..<categoryData.count {
+                        let num = Int()
+                        preIndexCount.append(num)
+                    }
+                    
+                    for i in 0..<table[year][month][day].count {
+                        if let index = table[year][month][day][i].eventIndex {
+                            preIndexCount[index] = preIndexCount[index] + 1
+                        }
+                    }
+                    
+                    for i in 0..<preIndexCount.count {
+                        if preIndexCount[i] != 0 {
+                            indexCount.append(CGFloat(preIndexCount[i]))
+                            signR.append(categoryData[i].signR)
+                            signG.append(categoryData[i].signG)
+                            signB.append(categoryData[i].signB)
+                        }
+                    }
+                    
+//                    print("indexCount:",indexCount)
+//                    print("signR",signR)
+                    
+                    cell.drawView.proportion = indexCount
+                    cell.drawView.signR = signR
+                    cell.drawView.signG = signG
+                    cell.drawView.signB = signB
+                    
                 }
             } else {
                 cell.textLabel.text = ""
@@ -249,6 +344,7 @@ extension CalendarViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! CalendarEventTableViewCell
         cell.titleLabel.text = "\(data[indexPath.row].name)"
         if let categoryIndex = data[indexPath.row].category {
+//            print(categoryIndex)
             let signR = categoryData[categoryIndex].signR
             let signG = categoryData[categoryIndex].signG
             let signB = categoryData[categoryIndex].signB

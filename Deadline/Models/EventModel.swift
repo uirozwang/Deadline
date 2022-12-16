@@ -13,13 +13,8 @@ import UIKit
 struct ToDoEvent: Codable {
     var category: Int?
     var name: String = ""
-    var section: [ToDoSection]
+    var detail: [[ToDoDetail]]
     var deadline: Date
-}
-/// section為分區序號
-struct ToDoSection: Codable {
-    var section: Int?
-    var detail: [ToDoDetail]?
 }
 
 /// need代表用時，toDo為實際排程的時間
@@ -34,6 +29,7 @@ struct ToDoDetail: Codable {
     var toDoMinute: Int?
 }
 
+/// 分類
 struct ToDoCategory: Codable {
     var categoryName: String
     var index: Int?
@@ -42,9 +38,9 @@ struct ToDoCategory: Codable {
     var signB: CGFloat = 0.0
 }
 
-struct CalendarDay {
-    var name: String?
-    var signR: CGFloat?
-    var signG: CGFloat?
-    var signB: CGFloat?
+/// 每15分鐘一個區間
+struct CalendarPartition {
+    var eventIndex: Int?
+    var detailSection: Int?
+    var detailRow: Int?
 }
