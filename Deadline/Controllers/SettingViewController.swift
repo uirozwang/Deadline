@@ -13,7 +13,7 @@ class SettingViewController: UIViewController {
         let data = [ToDoEvent(category: 0,
                               name: "Event",
                               detail: [
-                                [ToDoDetail(detailName: "Detail1", needHour: 3, needMin: 15, toDoYear: 22, toDoMonth: 10, toDoDay: 2, toDoHour: 20, toDoMinute: 30),
+                                [ToDoDetail(detailName: "Detail1", needHour: 3, needMin: 15, toDoYear: 22, toDoMonth: 11, toDoDay: 2, toDoHour: 1, toDoMinute: 30),
                                  ToDoDetail(detailName: "Detail2", needHour: 2, needMin: 30, toDoYear: 22, toDoMonth: 11, toDoDay: 5, toDoHour: 20, toDoMinute: 30)],
                                 [ToDoDetail(detailName: "Detail3", needHour: 1, needMin: 45),
                                  ToDoDetail(detailName: "Detail4", needHour: 3, needMin: 15)],

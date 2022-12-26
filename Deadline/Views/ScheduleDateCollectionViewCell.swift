@@ -31,8 +31,8 @@ class ScheduleDateCollectionViewCell: UICollectionViewCell, UITableViewDelegate,
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "scheduledatetableviewcell", for: indexPath) as! ScheduleDateTableViewCell
         if let textArray = textArray {
-            print(textArray.count)
-            print(indexPath)
+//            print(textArray.count)
+//            print(indexPath)
             cell.dateLabel.text = textArray[indexPath.row]
         }
         

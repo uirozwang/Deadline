@@ -8,7 +8,7 @@
 import UIKit
 
 protocol EventsViewControllerDelegate {
-    func updateCalendarTableView()
+    func updateCalendarTableView(data: [ToDoEvent])
 }
 
 class EventsViewController: UIViewController {
@@ -29,6 +29,12 @@ class EventsViewController: UIViewController {
         super.viewDidLoad()
         getData()
         checkCategoryData()
+        
+        if let tabBarController = tabBarController as? TabBarController {
+            tabBarController.delegate = self
+            // 暫時廢棄
+            tabBarController.tabBarDelegate = self
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -174,9 +180,10 @@ extension EventsViewController: UITableViewDataSource {
 
 extension EventsViewController: NewEventViewControllerDelegate {
     func newEventVCTappedSaveButton(state: String, data: ToDoEvent, categoryData: [ToDoCategory]) {
+        print(#function)
         if state == "edit" {
             self.data[indexPath.row] = data
-            print(data)
+//            print("Events NEVCD: ", data)
             tableView.reloadData()
         }
         if state == "new" {
@@ -191,9 +198,45 @@ extension EventsViewController: NewEventViewControllerDelegate {
 
 extension EventsViewController: ScheduleViewControllerDelegate {
     func scheduleVCTappedSaveButton(data: [ToDoEvent]) {
+        print(#function)
         self.data = data
         tableView.reloadData()
         saveData()
-        print(#function)
     }
+}
+// 暫時廢棄
+extension EventsViewController: TabBarControllerDelegate {
+    func tapTabBarItem(previousVC: String, tag: Int) {
+    }
+}
+
+extension EventsViewController: UITabBarControllerDelegate {
+    
+    // 點到Events時，VC不管什麼時候都是NavigationController
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        print("EventsVC UITabBarControllerDelegate:", #function)
+        
+        // 上一動是誰
+        var previousVC = ""
+        if let objVC = UIApplication.topViewController(),
+           let objVCTitle = objVC.title {
+            print("objVCTitle:", objVCTitle)
+            previousVC = objVCTitle
+        }
+        // 這一動點了哪個tab
+        let tag = viewController.tabBarItem.tag
+//        print("which tag tapped:", tag)
+        
+        // 防止資料修改到一半時被取消，也許是不必要的事，先做起來放著
+        if (previousVC == "NewEvent" || previousVC == "Schedule") && tag == 1 {
+            return false
+        }
+        // 來考慮一下什麼條件下呼叫這個function
+        if previousVC == "Events" && tag == 0 {
+            delegate?.updateCalendarTableView(data: data)
+        }
+        
+        return true
+    }
+    
 }

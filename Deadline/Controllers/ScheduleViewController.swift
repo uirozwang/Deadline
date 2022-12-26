@@ -221,9 +221,6 @@ class ScheduleViewController: UIViewController {
                                     year = year + 1
                                 }
                                 
-//                                print(k, year, month, day, hour, min, hour*4+min/15+l, (hour*4+min/15+l)%96)
-//                                print("row:", table[year][month][day][(hour*4+min/15+l)%96].detailRow)
-                                
                                 if table[year][month][day][(hour*4+min/15+l)%96].eventIndex == nil,
                                    table[year][month][day][(hour*4+min/15+l)%96].detailSection == nil,
                                    table[year][month][day][(hour*4+min/15+l)%96].detailRow == nil {
@@ -239,7 +236,6 @@ class ScheduleViewController: UIViewController {
                                     restoreEventIndex2 = i
                                     restoreDetailSection2 = j
                                     restoreDetailRow2 = k
-//                                    print("restore")
                                     break
                                 }
                             }
@@ -302,7 +298,7 @@ extension ScheduleViewController: UITableViewDataSource {
             let day = position.day - 1
             if let detailSection =  table[year][month][day][indexPath.row].detailSection,
                let detailRow = table[year][month][day][indexPath.row].detailRow,
-               let index = index
+               let index = table[year][month][day][indexPath.row].eventIndex
             {
 //                print(detailSection, detailRow)
                 let detailName = data[index].detail[detailSection][detailRow].detailName
@@ -321,6 +317,7 @@ extension ScheduleViewController: UITableViewDataSource {
                 cell.detailNameLabel.text = name
                 cell.cursorImageView.image = self.schedulePosition == indexPath ? UIImage(systemName: "arrowshape.backward.fill") : nil
                 if data[index].detail[indexPath.section][indexPath.row].toDoYear != nil{
+                    print(index, indexPath.section, indexPath.row, data[index].detail[indexPath.section][indexPath.row])
                     cell.checkImageView.image = UIImage(systemName: "checkmark")
                 } else {
                     cell.checkImageView.image = nil
@@ -424,8 +421,6 @@ extension ScheduleViewController: UITableViewDataSource {
                 dateTableView.reloadData()
                 eventTableView.reloadData()
             }
-            
-//            print(#function)
         }
     }
 }

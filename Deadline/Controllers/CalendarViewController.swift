@@ -25,17 +25,22 @@ class CalendarViewController: UIViewController {
     @IBAction func tappedDateRightButton(sender: UIButton) {
         monthAndYear(positive: true)
     }
+    @IBAction func tappedTabbarCalenlarButton(sender: Any) {
+        
+    }
     @IBAction func animateFrame(_ sender: UIButton) {
-        let diceRoll = CGFloat(Int(arc4random_uniform(7))*30)
-        let circleEdge = CGFloat(200)
-        
-        // 直接指定 frame 布局
-        let statusView = CalendarDayCollectionViewCellDrawView(frame: CGRect(x: 50, y: diceRoll, width: circleEdge, height: circleEdge))
-        
-        view.addSubview(statusView)
-        
-        // 开始动画
-        statusView.animateCircle(duration: 1.0)
+//        let diceRoll = CGFloat(Int(arc4random_uniform(7))*30)
+//        let circleEdge = CGFloat(200)
+//
+//        // 直接指定 frame 布局
+//        let statusView = CalendarDayCollectionViewCellDrawView(frame: CGRect(x: 50, y: diceRoll, width: circleEdge, height: circleEdge))
+//
+//        view.addSubview(statusView)
+//
+//        // 开始动画
+//        statusView.animateCircle(duration: 1.0)
+        dayCollectionView.reloadData()
+        print(#function)
     }
     
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -46,6 +51,7 @@ class CalendarViewController: UIViewController {
     var categoryData = [ToDoCategory]()
     // 行事曆表格，每一格15分鐘
     var table = [[[[CalendarPartition]]]]()
+    var tableBackup = [[[[CalendarPartition]]]]()
     
     let lineWidth: CGFloat = 2
     
@@ -55,7 +61,7 @@ class CalendarViewController: UIViewController {
     let currentWeekday = Calendar.current.component(.weekday, from: Date())
     
     var positionYear = 2022
-    var positionMonth = 11
+    var positionMonth = 12
     var positionDay = 20
     
     override func viewDidLoad() {
@@ -70,8 +76,20 @@ class CalendarViewController: UIViewController {
         tableView.dataSource = self
         getData()
         initialCalendarTable()
+        tableBackup = table
         updateCalendarTable()
-//        print(table[22][11][5])
+        
+        if let tabBarController = tabBarController as? TabBarController {
+            tabBarController.delegate = self
+            // 暫時廢棄
+            tabBarController.tabBarDelegate = self
+        }
+        
+        if let navigationController = tabBarController?.viewControllers?[1] as? UINavigationController,
+           let eventVC = navigationController.viewControllers[0] as? EventsViewController {
+            eventVC.delegate = self
+        }
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -121,7 +139,6 @@ class CalendarViewController: UIViewController {
             do {
                 let data = try JSONDecoder().decode([ToDoEvent].self, from: data)
                 self.data = data
-//                print("get data")
             } catch {
                 print("Decoding error:", error)
             }
@@ -130,7 +147,6 @@ class CalendarViewController: UIViewController {
             do {
                 let categoryData = try JSONDecoder().decode([ToDoCategory].self, from: categoryData)
                 self.categoryData = categoryData
-//                print("get category data")
             } catch {
                 print("Decoding error:", error)
             }
@@ -174,8 +190,8 @@ class CalendarViewController: UIViewController {
                            let needHour = data[i].detail[j][k].needHour,
                            let needMin = data[i].detail[j][k].needMin {
                             let needTime = needHour * 4 + needMin / 15
-                            for i in 0..<needTime {
-                                if hour*4+min/15+i==96 {
+                            for l in 0..<needTime {
+                                if hour*4+min/15+l==96 {
                                     day = day + 1
                                 }
                                 if i%4 != 0 && j == 1  && day == 27{
@@ -190,9 +206,9 @@ class CalendarViewController: UIViewController {
                                     month = 1
                                     year = year + 1
                                 }
-                                table[year][month][day][hour*4+min/15+i].eventIndex = i
-                                table[year][month][day][hour*4+min/15+i].detailSection = j
-                                table[year][month][day][hour*4+min/15+i].detailRow = k
+                                table[year][month][day][hour*4+min/15+l].eventIndex = i
+                                table[year][month][day][hour*4+min/15+l].detailSection = j
+                                table[year][month][day][hour*4+min/15+l].detailRow = k
                             }
                         }
                     }
@@ -223,7 +239,7 @@ extension CalendarViewController: UICollectionViewDataSource {
         switch collectionView.tag {
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "weekcell", for: indexPath) as! CalendarWeekCollectionViewCell
-            cell.backgroundColor = .systemMint
+            cell.backgroundColor = .systemGray3
             cell.textLabel.text = week[indexPath.row]
             return cell
         case 1:
@@ -239,30 +255,34 @@ extension CalendarViewController: UICollectionViewDataSource {
                     cell.textLabel.text = ""
                 } else {
                     cell.textLabel.text = "\(indexPath.row-firstDayPosition+2)"
+                    cell.backgroundColor = UIColor.systemBackground
                     
-                    
-                    // 統整各分類的數量
-                    let year = positionYear - 2001
+                    // 統整各分類的數量，對cell的drawView而言，資料只有各分類的數量以及該分類的顏色，所以好像也能直接把percentage的篩選寫在這？
+                    let year = positionYear - 2000
                     let month = positionMonth - 1
-                    let day = positionDay - 1
+                    let day = indexPath.row-firstDayPosition+1
                     
+                    
+                    // 用來記錄當天事項在各個分類中個別有幾個
                     var preIndexCount: [Int] = []
+                    // 篩選後，實際的分類次數，只傳遞顏色的部分
                     var indexCount: [CGFloat] = []
                     var signR: [CGFloat] = []
                     var signG: [CGFloat] = []
                     var signB: [CGFloat] = []
-                    
+                    // 空陣列，用來記錄次數
                     for _ in 0..<categoryData.count {
                         let num = Int()
                         preIndexCount.append(num)
                     }
-                    
+                    // 計算次數
                     for i in 0..<table[year][month][day].count {
-                        if let index = table[year][month][day][i].eventIndex {
-                            preIndexCount[index] = preIndexCount[index] + 1
+                        if let index = table[year][month][day][i].eventIndex,
+                           let categoryIndex = data[index].category {
+                            preIndexCount[categoryIndex] = preIndexCount[categoryIndex] + 1
                         }
                     }
-                    
+                    // 篩選掉0的部分
                     for i in 0..<preIndexCount.count {
                         if preIndexCount[i] != 0 {
                             indexCount.append(CGFloat(preIndexCount[i]))
@@ -272,17 +292,46 @@ extension CalendarViewController: UICollectionViewDataSource {
                         }
                     }
                     
-//                    print("indexCount:",indexCount)
-//                    print("signR",signR)
+                    var needTime = 0
                     
-                    cell.drawView.proportion = indexCount
+                    for count in indexCount {
+                        needTime = needTime + Int(count)
+                    }
+                    
+                    var total: CGFloat = 0
+                    for index in indexCount {
+                        total = total + index
+                    }
+                    
+                    var percentages: [CGFloat] = []
+                    for index in indexCount {
+                        let percentage = index/total*100
+                        percentages.append(percentage)
+                    }
+                    
+                    cell.drawView.percentages = percentages
                     cell.drawView.signR = signR
                     cell.drawView.signG = signG
                     cell.drawView.signB = signB
+                    cell.drawView.needTimeLabel.text = "\(needTime)"
+                    
+                    if percentages.count == 0 {
+                        cell.drawView.percentages = [100]
+                        cell.drawView.signR = [333]
+                        cell.drawView.signG = [333]
+                        cell.drawView.signB = [333]
+                        cell.drawView.needTimeLabel.text = ""
+                    }
                     
                 }
             } else {
-                cell.textLabel.text = ""
+                cell.textLabel.text = " "
+                cell.drawView.percentages = [100]
+                cell.drawView.signR = [333]
+                cell.drawView.signG = [333]
+                cell.drawView.signB = [333]
+                cell.drawView.needTimeLabel.text = ""
+                
             }
             
             return cell
@@ -355,5 +404,40 @@ extension CalendarViewController: UITableViewDataSource {
             cell.colorView.backgroundColor = color
         }
         return cell
+    }
+}
+
+extension CalendarViewController: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        print("CalendarVC UITabBarControllerDelegate", #function)
+        let tag = viewController.tabBarItem.tag
+        if tag == 0 {
+            dayCollectionView.reloadData()
+        }
+    }
+    
+}
+
+// 暫時廢棄
+extension CalendarViewController: TabBarControllerDelegate {
+    func tapTabBarItem(previousVC: String, tag: Int) {
+        print(#function)
+//        print("CalendarVC:",previousVC, tag)
+        if tag == 0 {
+            // 可能要重新讀取資料
+            dayCollectionView.reloadData()
+        }
+    }
+}
+
+extension CalendarViewController: EventsViewControllerDelegate {
+    func updateCalendarTableView(data: [ToDoEvent]) {
+        print("CalendarVC EventsViewControllerDelegate", #function)
+        self.data = data
+        table = tableBackup
+        updateCalendarTable()
+        dayCollectionView.reloadData()
+        tableView.reloadData()
     }
 }

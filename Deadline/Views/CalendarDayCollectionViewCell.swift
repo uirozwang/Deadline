@@ -9,5 +9,8 @@ import UIKit
 
 class CalendarDayCollectionViewCell: UICollectionViewCell {
     @IBOutlet var textLabel: UILabel!
-    @IBOutlet weak var drawView: CalendarDayCollectionViewCellDrawView!
+    @IBOutlet var drawView: CalendarDayCollectionViewCellDrawView!
+    override func prepareForReuse() {
+        
+    }
 }

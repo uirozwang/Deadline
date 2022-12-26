@@ -41,14 +41,19 @@ class NewEventViewController: UIViewController {
         resignFirstResponder()
     }
     
+    @IBAction func tappedTestButton(sender: UIButton) {
+        print(#function)
+        print(data)
+    }
+    
     @IBAction func tappedJustView(_ sender: Any) {
         view.endEditing(true)
     }
     var indexPath: IndexPath?
     
     var data = ToDoEvent(category: 0,
-                         name: "",
-                         detail: [[ToDoDetail(detailName:"detail")]],
+                         name: "Event",
+                         detail: [[ToDoDetail(detailName:"Detail", needHour: 0, needMin: 0)]],
                          deadline: Date())
     
     var categoryData = [ToDoCategory]()
@@ -117,13 +122,18 @@ class NewEventViewController: UIViewController {
         }
         let date = datePicker.date
         // 修改時區失敗，暫時先自己加8小時
+        // 結果是Xcode的console只會顯示+0時區
 //        date = date + 8*3600
         data.deadline = date
         if let text = titleTextField.text {
             data.name = text
         }
-        delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
-        state = ""
+//        print(data)
+//        print(state)
+        if identifier == "neweventsavebutton" {
+            delegate?.newEventVCTappedSaveButton(state: state, data: data, categoryData: categoryData)
+            state = ""
+        }
         return true
     }
     
@@ -291,6 +301,36 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
             return 50
         }
         
+    }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "delete") { action, sourceView, completionHandler in
+            
+            // 把整個section備份起來
+            let details = self.data.detail[indexPath.section]
+            // 清空該section，把除了要刪掉的以外都加回去
+            self.data.detail[indexPath.section].removeAll()
+            for i in 0..<details.count {
+                if i != indexPath.row {
+                    self.data.detail[indexPath.section].append(details[i])
+                }
+            }
+            
+            if self.data.detail[indexPath.section].count == 0 {
+                let details = self.data.detail
+                self.data.detail.removeAll()
+                for i in 0..<details.count {
+                    if i != indexPath.section {
+                        self.data.detail.append(details[i])
+                    }
+                }
+            }
+            
+            tableView.reloadData()
+            completionHandler(true)
+            
+        }
+        let swipeActionsConfiguration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return swipeActionsConfiguration
     }
 }
 

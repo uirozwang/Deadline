@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C7147A4A2951A04000D46F79 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7147A492951A04000D46F79 /* Extensions.swift */; };
 		C725955E28C4ED2F00BF2E82 /* CalendarCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725955D28C4ED2F00BF2E82 /* CalendarCollectionView.swift */; };
 		C725956028C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */; };
 		C725956428C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */; };
@@ -32,9 +33,11 @@
 		C797700D28C7BC9C00244A64 /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C797700C28C7BC9C00244A64 /* EventModel.swift */; };
 		C797700F28C8B47F00244A64 /* NewEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C797700E28C8B47F00244A64 /* NewEventViewController.swift */; };
 		C797701128C8B59B00244A64 /* EventDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C797701028C8B59B00244A64 /* EventDetailTableViewCell.swift */; };
+		C7EE71E2294C626800284599 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7EE71E1294C626800284599 /* TabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C7147A492951A04000D46F79 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		C725955D28C4ED2F00BF2E82 /* CalendarCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCollectionView.swift; sourceTree = "<group>"; };
 		C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCollectionViewCell.swift; sourceTree = "<group>"; };
 		C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarWeekCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 		C797700C28C7BC9C00244A64 /* EventModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModel.swift; sourceTree = "<group>"; };
 		C797700E28C8B47F00244A64 /* NewEventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEventViewController.swift; sourceTree = "<group>"; };
 		C797701028C8B59B00244A64 /* EventDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailTableViewCell.swift; sourceTree = "<group>"; };
+		C7EE71E1294C626800284599 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TabBarController.swift; path = Deadline/Controllers/TabBarController.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,7 @@
 		C716BDFF28C4E35000147EF2 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				C7EE71E1294C626800284599 /* TabBarController.swift */,
 				C788A55228C4B7CF009FEB5A /* CalendarViewController.swift */,
 				C766909528DC6DB40065D2F9 /* EventsViewController.swift */,
 				C797700E28C8B47F00244A64 /* NewEventViewController.swift */,
@@ -149,6 +154,7 @@
 				C716BDFF28C4E35000147EF2 /* Controllers */,
 				C788A54E28C4B7CF009FEB5A /* AppDelegate.swift */,
 				C788A55028C4B7CF009FEB5A /* SceneDelegate.swift */,
+				C7147A492951A04000D46F79 /* Extensions.swift */,
 				C788A55A28C4B7D0009FEB5A /* Assets.xcassets */,
 				C788A55F28C4B7D0009FEB5A /* Info.plist */,
 				C788A55728C4B7CF009FEB5A /* Deadline.xcdatamodeld */,
@@ -232,6 +238,7 @@
 				C725955E28C4ED2F00BF2E82 /* CalendarCollectionView.swift in Sources */,
 				C76C44B428CEC775009FFB40 /* EventDetailTableViewFooterView.swift in Sources */,
 				C72E2F12291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift in Sources */,
+				C7EE71E2294C626800284599 /* TabBarController.swift in Sources */,
 				C727915928EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift in Sources */,
 				C727915328E346A800C4EFBD /* SettingViewController.swift in Sources */,
 				C788A55328C4B7CF009FEB5A /* CalendarViewController.swift in Sources */,
@@ -245,6 +252,7 @@
 				C766909028D27ED00065D2F9 /* EventDetailTableViewFooterViewBottom.swift in Sources */,
 				C766909428DB2C2A0065D2F9 /* EventsTableViewCell.swift in Sources */,
 				C727915B28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift in Sources */,
+				C7147A4A2951A04000D46F79 /* Extensions.swift in Sources */,
 				C766909828E2D6520065D2F9 /* NewEventColorViewController.swift in Sources */,
 				C788A55928C4B7CF009FEB5A /* Deadline.xcdatamodeld in Sources */,
 				C797700D28C7BC9C00244A64 /* EventModel.swift in Sources */,
