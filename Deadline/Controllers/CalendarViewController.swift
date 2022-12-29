@@ -29,16 +29,16 @@ class CalendarViewController: UIViewController {
         
     }
     @IBAction func animateFrame(_ sender: UIButton) {
-//        let diceRoll = CGFloat(Int(arc4random_uniform(7))*30)
-//        let circleEdge = CGFloat(200)
-//
-//        // 直接指定 frame 布局
-//        let statusView = CalendarDayCollectionViewCellDrawView(frame: CGRect(x: 50, y: diceRoll, width: circleEdge, height: circleEdge))
-//
-//        view.addSubview(statusView)
-//
-//        // 开始动画
-//        statusView.animateCircle(duration: 1.0)
+        //        let diceRoll = CGFloat(Int(arc4random_uniform(7))*30)
+        //        let circleEdge = CGFloat(200)
+        //
+        //        // 直接指定 frame 布局
+        //        let statusView = CalendarDayCollectionViewCellDrawView(frame: CGRect(x: 50, y: diceRoll, width: circleEdge, height: circleEdge))
+        //
+        //        view.addSubview(statusView)
+        //
+        //        // 开始动画
+        //        statusView.animateCircle(duration: 1.0)
         dayCollectionView.reloadData()
         print(#function)
     }
@@ -52,6 +52,11 @@ class CalendarViewController: UIViewController {
     // 行事曆表格，每一格15分鐘
     var table = [[[[CalendarPartition]]]]()
     var tableBackup = [[[[CalendarPartition]]]]()
+    //
+    var currentMonthEvents: [Int] = []
+    var currentDayDetails: [CalendarPartition] = []
+    // tableView顯示當月event或指定日期的detail，false為month，true則為detail
+    var monthOrDay: Bool = false
     
     let lineWidth: CGFloat = 2
     
@@ -130,7 +135,9 @@ class CalendarViewController: UIViewController {
     }
     func updateCalender() {
         dateLabel.text = "\(months[positionMonth - 1]) \(positionYear)"
+        updateCalendarTable()
         dayCollectionView.reloadData()
+        tableView.reloadData()
     }
     
     func getData() {
@@ -215,6 +222,27 @@ class CalendarViewController: UIViewController {
                 }
             }
         }
+        updateCurrentMonthEvent()
+    }
+    // 整理當前顯示月份有出現event
+    func updateCurrentMonthEvent() {
+        let year = positionYear - 2000
+        let month = positionMonth - 1
+        var events: Set<Int> = []
+        
+        for i in 0..<table[year][month].count {
+            for j in 0..<96 {
+                if let eventIndex = table[year][month][i][j].eventIndex {
+                    events.insert(eventIndex)
+                }
+            }
+        }
+        var indexs: [Int] = []
+        for event in events {
+            indexs.append(event)
+        }
+        indexs.sort(){$0<$1}
+        currentMonthEvents = indexs
     }
     
 }
@@ -341,6 +369,40 @@ extension CalendarViewController: UICollectionViewDataSource {
         return UICollectionViewCell()
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // 弄一個陣列儲存該日的detail
+        // 一個bool儲存顯示當月event或者選定日期的detail
+        // 通知tableView刷新
+        // 搜尋該日的所有detail的evnet section row，到時候顯示開始到結束的時間
+        
+        let firstDayPosition = checkWeekday(year: positionYear,
+                                            month: positionMonth,
+                                            day: 1)
+        let year = positionYear - 2000
+        let month = positionMonth - 1
+        let day = indexPath.row-firstDayPosition+1
+        var check = 1
+        currentDayDetails = []
+        
+        for i in 0..<table[year][month][day].count {
+            check = 1
+            for j in 0..<currentDayDetails.count {
+                if table[year][month][day][i].eventIndex == currentDayDetails[j].eventIndex &&
+                    table[year][month][day][i].detailSection == currentDayDetails[j].detailSection &&
+                    table[year][month][day][i].detailRow == currentDayDetails[j].detailRow {
+                    check = 0
+                }
+            }
+            if check == 1 && table[year][month][day][i].eventIndex != nil {
+                currentDayDetails.append(table[year][month][day][i])
+            }
+        }
+        
+        monthOrDay.toggle()
+        tableView.reloadData()
+        
+    }
+    
 }
 
 extension CalendarViewController: UICollectionViewDelegateFlowLayout {
@@ -381,28 +443,63 @@ extension CalendarViewController: UICollectionViewDelegateFlowLayout {
 
 extension CalendarViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.count
+        if monthOrDay {
+            return currentDayDetails.count
+        } else {
+            return currentMonthEvents.count
+        }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        50
     }
 }
 
 extension CalendarViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! CalendarEventTableViewCell
-        cell.titleLabel.text = "\(data[indexPath.row].name)"
-        if let categoryIndex = data[indexPath.row].category {
-//            print(categoryIndex)
-            let signR = categoryData[categoryIndex].signR
-            let signG = categoryData[categoryIndex].signG
-            let signB = categoryData[categoryIndex].signB
-            let color = UIColor(red: signR/255,
-                                green: signG/255,
-                                blue: signB/255,
-                                alpha: 1.0)
-            cell.colorView.backgroundColor = color
+        
+        if monthOrDay == true {
+            if let eventIndex = currentDayDetails[indexPath.row].eventIndex,
+               let section = currentDayDetails[indexPath.row].detailSection,
+               let row = currentDayDetails[indexPath.row].detailRow {
+                let eventName = data[eventIndex].name
+                let detailName = data[eventIndex].detail[section][row].detailName
+                let todoYear = data[eventIndex].detail[section][row].toDoYear
+                let todoMonth = data[eventIndex].detail[section][row].toDoMonth
+                let todoDay = data[eventIndex].detail[section][row].toDoDay
+                let todoHour = data[eventIndex].detail[section][row].toDoHour
+                let todoMin = data[eventIndex].detail[section][row].toDoMinute
+                cell.titleLabel.text = "\(eventName)-\(detailName)"
+                if let categoryIndex = data[eventIndex].category {
+                    let signR = categoryData[categoryIndex].signR
+                    let signG = categoryData[categoryIndex].signG
+                    let signB = categoryData[categoryIndex].signB
+                    let color = UIColor(red: signR/255,
+                                        green: signG/255,
+                                        blue: signB/255,
+                                        alpha: 1.0)
+                    cell.colorView.backgroundColor = color
+                }
+            }
+        } else {
+            cell.titleLabel.text = "\(data[currentMonthEvents[indexPath.row]].name)"
+            if let categoryIndex = data[currentMonthEvents[indexPath.row]].category {
+                let signR = categoryData[categoryIndex].signR
+                let signG = categoryData[categoryIndex].signG
+                let signB = categoryData[categoryIndex].signB
+                let color = UIColor(red: signR/255,
+                                    green: signG/255,
+                                    blue: signB/255,
+                                    alpha: 1.0)
+                cell.colorView.backgroundColor = color
+            }
         }
+        
+        
+        
         return cell
     }
 }
@@ -410,7 +507,7 @@ extension CalendarViewController: UITableViewDataSource {
 extension CalendarViewController: UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("CalendarVC UITabBarControllerDelegate", #function)
+        //        print("CalendarVC UITabBarControllerDelegate", #function)
         let tag = viewController.tabBarItem.tag
         if tag == 0 {
             dayCollectionView.reloadData()
@@ -422,8 +519,8 @@ extension CalendarViewController: UITabBarControllerDelegate {
 // 暫時廢棄
 extension CalendarViewController: TabBarControllerDelegate {
     func tapTabBarItem(previousVC: String, tag: Int) {
-        print(#function)
-//        print("CalendarVC:",previousVC, tag)
+        //        print(#function)
+        //        print("CalendarVC:",previousVC, tag)
         if tag == 0 {
             // 可能要重新讀取資料
             dayCollectionView.reloadData()
@@ -433,7 +530,7 @@ extension CalendarViewController: TabBarControllerDelegate {
 
 extension CalendarViewController: EventsViewControllerDelegate {
     func updateCalendarTableView(data: [ToDoEvent]) {
-        print("CalendarVC EventsViewControllerDelegate", #function)
+        //        print("CalendarVC EventsViewControllerDelegate", #function)
         self.data = data
         table = tableBackup
         updateCalendarTable()

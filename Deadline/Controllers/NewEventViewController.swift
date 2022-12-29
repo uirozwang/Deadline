@@ -325,6 +325,11 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
+            // 如果完全沒detail，會導致底部的footView也跟著消失，所以無論如何都要保留一個
+            if self.data.detail.count == 0 {
+                self.data.detail = [[ToDoDetail(detailName: "")]]
+            }
+            
             tableView.reloadData()
             completionHandler(true)
             

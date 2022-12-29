@@ -214,13 +214,13 @@ extension EventsViewController: UITabBarControllerDelegate {
     
     // 點到Events時，VC不管什麼時候都是NavigationController
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        print("EventsVC UITabBarControllerDelegate:", #function)
+//        print("EventsVC UITabBarControllerDelegate:", #function)
         
         // 上一動是誰
         var previousVC = ""
         if let objVC = UIApplication.topViewController(),
            let objVCTitle = objVC.title {
-            print("objVCTitle:", objVCTitle)
+//            print("objVCTitle:", objVCTitle)
             previousVC = objVCTitle
         }
         // 這一動點了哪個tab
