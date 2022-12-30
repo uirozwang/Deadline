@@ -126,6 +126,10 @@ extension EventsViewController: UITableViewDelegate {
         self.indexPath = indexPath
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        45
+    }
+    
 }
 
 extension EventsViewController: UITableViewDataSource {
