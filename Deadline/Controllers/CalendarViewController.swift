@@ -57,6 +57,7 @@ class CalendarViewController: UIViewController {
     var currentDayDetails: [CalendarPartition] = []
     // tableView顯示當月event或指定日期的detail，false為month，true則為detail
     var monthOrDay: Bool = false
+    var clickedDay: Int = 0
     
     let lineWidth: CGFloat = 2
     
@@ -273,6 +274,14 @@ extension CalendarViewController: UICollectionViewDataSource {
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "daycell", for: indexPath) as! CalendarDayCollectionViewCell
             cell.backgroundColor = .systemBackground
+            
+            // 標示被點擊的日期
+            if monthOrDay && indexPath.row == clickedDay {
+                cell.textLabel.backgroundColor = UIColor.systemIndigo
+            } else {
+                cell.textLabel.backgroundColor = UIColor.systemBackground
+            }
+            
             let firstDayPosition = checkWeekday(year: positionYear,
                                                 month: positionMonth,
                                                 day: 1)
@@ -398,8 +407,10 @@ extension CalendarViewController: UICollectionViewDataSource {
             }
         }
         
+        clickedDay = indexPath.row
         monthOrDay.toggle()
         tableView.reloadData()
+        dayCollectionView.reloadData()
         
     }
     
@@ -455,10 +466,21 @@ extension CalendarViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         50
     }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        30
+    }
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if monthOrDay {
+            return "Day Details"
+        } else {
+            return "Month Events"
+        }
+    }
 }
 
 extension CalendarViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "todocell", for: indexPath) as! CalendarEventTableViewCell
         
         if monthOrDay == true {
@@ -472,7 +494,7 @@ extension CalendarViewController: UITableViewDataSource {
                 let todoDay = data[eventIndex].detail[section][row].toDoDay
                 let todoHour = data[eventIndex].detail[section][row].toDoHour
                 let todoMin = data[eventIndex].detail[section][row].toDoMinute
-                cell.titleLabel.text = "\(eventName)-\(detailName)"
+                cell.titleLabel.text = "\(eventName)-\(detailName)  Start: \(todoMonth!+1)/\(todoDay!+1) \(todoHour!):\(todoMin!)"
                 if let categoryIndex = data[eventIndex].category {
                     let signR = categoryData[categoryIndex].signR
                     let signG = categoryData[categoryIndex].signG

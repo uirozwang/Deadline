@@ -84,6 +84,7 @@ class ScheduleViewController: UIViewController {
                     self.position.year = 2000+i
                     self.updateDatePopUpButton()
                     self.dateTableView.scrollToRow(at: IndexPath(row: 0, section: 0) , at: .top, animated: false)
+                    self.dateTableView.reloadData()
                 })
                 actions.append(action)
             }
@@ -105,6 +106,7 @@ class ScheduleViewController: UIViewController {
                     
                     self.updateDatePopUpButton()
                     self.dateTableView.scrollToRow(at: IndexPath(row: 0, section: 0) , at: .top, animated: false)
+                    self.dateTableView.reloadData()
                 })
                 actions.append(action)
             }
@@ -122,6 +124,7 @@ class ScheduleViewController: UIViewController {
                         self.position.day = 1+i
                         self.updateDatePopUpButton()
                         self.dateTableView.scrollToRow(at: IndexPath(row: 0, section: 0) , at: .top, animated: false)
+                        self.dateTableView.reloadData()
                     })
                     actions.append(action)
                 }
@@ -133,6 +136,7 @@ class ScheduleViewController: UIViewController {
                         self.position.day = 1+i
                         self.updateDatePopUpButton()
                         self.dateTableView.scrollToRow(at: IndexPath(row: 0, section: 0) , at: .top, animated: false)
+                        self.dateTableView.reloadData()
                     })
                     actions.append(action)
                 }
@@ -317,7 +321,7 @@ extension ScheduleViewController: UITableViewDataSource {
                 cell.detailNameLabel.text = name
                 cell.cursorImageView.image = self.schedulePosition == indexPath ? UIImage(systemName: "arrowshape.backward.fill") : nil
                 if data[index].detail[indexPath.section][indexPath.row].toDoYear != nil{
-                    print(index, indexPath.section, indexPath.row, data[index].detail[indexPath.section][indexPath.row])
+//                    print(index, indexPath.section, indexPath.row, data[index].detail[indexPath.section][indexPath.row])
                     cell.checkImageView.image = UIImage(systemName: "checkmark")
                 } else {
                     cell.checkImageView.image = nil
@@ -404,7 +408,7 @@ extension ScheduleViewController: UITableViewDataSource {
                         self.eventTableView.reloadData()
                         self.dataBackup = self.data
                         self.tableBackup = self.table
-                        print("覆蓋")
+//                        print("覆蓋")
                     }
                     controller.addAction(okAction)
                     let cancelAction = UIAlertAction(title: "取消", style: .cancel) { _ in
