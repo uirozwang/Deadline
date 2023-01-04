@@ -224,7 +224,6 @@ class ScheduleViewController: UIViewController {
                                     month = 0
                                     year = year + 1
                                 }
-                                
                                 if table[year][month][day][(hour*4+min/15+l)%96].eventIndex == nil,
                                    table[year][month][day][(hour*4+min/15+l)%96].detailSection == nil,
                                    table[year][month][day][(hour*4+min/15+l)%96].detailRow == nil {
@@ -233,6 +232,7 @@ class ScheduleViewController: UIViewController {
                                     table[year][month][day][(hour*4+min/15+l)%96].detailSection = j
                                     table[year][month][day][(hour*4+min/15+l)%96].detailRow = k
                                 } else {
+                                    // 發現排程有衝突
                                     restoreKey = 1
                                     restoreEventIndex = table[year][month][day][(hour*4+min/15+l)%96].eventIndex
                                     restoreDetailSection = table[year][month][day][(hour*4+min/15+l)%96].detailSection
@@ -364,6 +364,8 @@ extension ScheduleViewController: UITableViewDataSource {
                 data[index].detail[schedulePosition.section][schedulePosition.row].toDoHour = indexPath.row/4
                 data[index].detail[schedulePosition.section][schedulePosition.row].toDoMinute = indexPath.row%4*15
             }
+            
+            // 這邊應該可以做優化，例如init可以備份一份空的，update另外寫一個簡易版的function，不用全部跑一輪
             initialCalendarTable()
             updateCalendarTable()
             

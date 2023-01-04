@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C7147A4A2951A04000D46F79 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7147A492951A04000D46F79 /* Extensions.swift */; };
-		C725955E28C4ED2F00BF2E82 /* CalendarCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725955D28C4ED2F00BF2E82 /* CalendarCollectionView.swift */; };
 		C725956028C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */; };
 		C725956428C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */; };
 		C725956828C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725956728C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift */; };
@@ -18,6 +17,10 @@
 		C727915928EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C727915828EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift */; };
 		C727915B28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C727915A28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift */; };
 		C72E2F12291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72E2F11291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift */; };
+		C763025729613A6C0050F196 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C763025629613A6C0050F196 /* GoogleService-Info.plist */; };
+		C763025A296180A70050F196 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C7630259296180A70050F196 /* FirebaseAuth */; };
+		C763025C296180A70050F196 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C763025B296180A70050F196 /* FirebaseFirestoreSwift */; };
+		C763025E296180A70050F196 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C763025D296180A70050F196 /* FirebaseStorage */; };
 		C766909028D27ED00065D2F9 /* EventDetailTableViewFooterViewBottom.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766908F28D27ED00065D2F9 /* EventDetailTableViewFooterViewBottom.swift */; };
 		C766909428DB2C2A0065D2F9 /* EventsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766909328DB2C2A0065D2F9 /* EventsTableViewCell.swift */; };
 		C766909628DC6DB40065D2F9 /* EventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C766909528DC6DB40065D2F9 /* EventsViewController.swift */; };
@@ -38,7 +41,6 @@
 
 /* Begin PBXFileReference section */
 		C7147A492951A04000D46F79 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		C725955D28C4ED2F00BF2E82 /* CalendarCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCollectionView.swift; sourceTree = "<group>"; };
 		C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCollectionViewCell.swift; sourceTree = "<group>"; };
 		C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarWeekCollectionViewCell.swift; sourceTree = "<group>"; };
 		C725956728C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEventTableViewCell.swift; sourceTree = "<group>"; };
@@ -48,6 +50,7 @@
 		C727915828EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateTableViewCell.swift; sourceTree = "<group>"; };
 		C727915A28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDateCollectionViewCell.swift; sourceTree = "<group>"; };
 		C72E2F11291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCollectionViewCellDrawView.swift; sourceTree = "<group>"; };
+		C763025629613A6C0050F196 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C766908F28D27ED00065D2F9 /* EventDetailTableViewFooterViewBottom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailTableViewFooterViewBottom.swift; sourceTree = "<group>"; };
 		C766909328DB2C2A0065D2F9 /* EventsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsTableViewCell.swift; sourceTree = "<group>"; };
 		C766909528DC6DB40065D2F9 /* EventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewController.swift; sourceTree = "<group>"; };
@@ -73,6 +76,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C763025A296180A70050F196 /* FirebaseAuth in Frameworks */,
+				C763025C296180A70050F196 /* FirebaseFirestoreSwift in Frameworks */,
+				C763025E296180A70050F196 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,7 +102,6 @@
 		C716BE0028C4E35B00147EF2 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C725955D28C4ED2F00BF2E82 /* CalendarCollectionView.swift */,
 				C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */,
 				C72E2F11291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift */,
 				C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */,
@@ -158,6 +163,7 @@
 				C788A55A28C4B7D0009FEB5A /* Assets.xcassets */,
 				C788A55F28C4B7D0009FEB5A /* Info.plist */,
 				C788A55728C4B7CF009FEB5A /* Deadline.xcdatamodeld */,
+				C763025629613A6C0050F196 /* GoogleService-Info.plist */,
 			);
 			path = Deadline;
 			sourceTree = "<group>";
@@ -178,6 +184,11 @@
 			dependencies = (
 			);
 			name = Deadline;
+			packageProductDependencies = (
+				C7630259296180A70050F196 /* FirebaseAuth */,
+				C763025B296180A70050F196 /* FirebaseFirestoreSwift */,
+				C763025D296180A70050F196 /* FirebaseStorage */,
+			);
 			productName = Deadline;
 			productReference = C788A54B28C4B7CF009FEB5A /* Deadline.app */;
 			productType = "com.apple.product-type.application";
@@ -206,6 +217,9 @@
 				Base,
 			);
 			mainGroup = C788A54228C4B7CF009FEB5A;
+			packageReferences = (
+				C7630258296180A70050F196 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = C788A54C28C4B7CF009FEB5A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -221,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C788A55E28C4B7D0009FEB5A /* LaunchScreen.storyboard in Resources */,
+				C763025729613A6C0050F196 /* GoogleService-Info.plist in Resources */,
 				C788A55B28C4B7D0009FEB5A /* Assets.xcassets in Resources */,
 				C788A55628C4B7CF009FEB5A /* Main.storyboard in Resources */,
 			);
@@ -235,7 +250,6 @@
 			files = (
 				C725956428C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift in Sources */,
 				C797700F28C8B47F00244A64 /* NewEventViewController.swift in Sources */,
-				C725955E28C4ED2F00BF2E82 /* CalendarCollectionView.swift in Sources */,
 				C76C44B428CEC775009FFB40 /* EventDetailTableViewFooterView.swift in Sources */,
 				C72E2F12291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift in Sources */,
 				C7EE71E2294C626800284599 /* TabBarController.swift in Sources */,
@@ -478,6 +492,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C7630258296180A70050F196 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C7630259296180A70050F196 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C7630258296180A70050F196 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		C763025B296180A70050F196 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C7630258296180A70050F196 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		C763025D296180A70050F196 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C7630258296180A70050F196 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		C788A55728C4B7CF009FEB5A /* Deadline.xcdatamodeld */ = {
