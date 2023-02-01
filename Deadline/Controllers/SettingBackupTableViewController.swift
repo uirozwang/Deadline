@@ -191,14 +191,14 @@ class SettingBackupTableViewController: UITableViewController {
         data = [ToDoEvent(category: 0,
                           name: "Event",
                           detail:
-                            [ToDoDetail(detailName: "Detail1", needHour: 3, needMin: 15, toDoYear: 23, toDoMonth: 0, toDoDay: 2, toDoHour: 1, toDoMinute: 30),
-                             ToDoDetail(detailName: "Detail2", needHour: 2, needMin: 30, toDoYear: 23, toDoMonth: 0, toDoDay: 5, toDoHour: 20, toDoMinute: 30)],
+                            [ToDoDetail(detailName: "Detail1", needHour: 3, needMin: 15, toDoYear: 23, toDoMonth: 1, toDoDay: 2, toDoHour: 1, toDoMinute: 30),
+                             ToDoDetail(detailName: "Detail2", needHour: 2, needMin: 30, toDoYear: 23, toDoMonth: 1, toDoDay: 5, toDoHour: 20, toDoMinute: 30)],
                           deadline: Date()),
                 ToDoEvent(category: 1,
                           name: "整理房間",
                           detail:
-                            [ToDoDetail(detailName: "掃地", needHour: 3, needMin: 15, toDoYear: 23, toDoMonth: 0, toDoDay: 7, toDoHour: 1, toDoMinute: 30),
-                             ToDoDetail(detailName: "拖地", needHour: 2, needMin: 30, toDoYear: 23, toDoMonth: 0, toDoDay: 9, toDoHour: 20, toDoMinute: 30)],
+                            [ToDoDetail(detailName: "掃地", needHour: 3, needMin: 15, toDoYear: 23, toDoMonth: 1, toDoDay: 7, toDoHour: 1, toDoMinute: 30),
+                             ToDoDetail(detailName: "拖地", needHour: 2, needMin: 30, toDoYear: 23, toDoMonth: 1, toDoDay: 9, toDoHour: 20, toDoMinute: 30)],
                           deadline: Date())]
         categoryData = [ToDoCategory(categoryName: "Work", index: 0, signR: 255.0, signG: 0.0, signB: 0.0),
                         ToDoCategory(categoryName: "Travel", index: 1, signR: 0.0, signG: 100.0, signB: 0.0),
