@@ -38,11 +38,9 @@ class ScheduleViewController: UIViewController {
     
     var restoreKey = 0
     var restoreEventIndex: Int? = nil
-    var restoreDetailSection: Int? = nil
-    var restoreDetailRow: Int? = nil
+    var restoreDetailIndex: Int? = nil
     var restoreEventIndex2: Int? = nil
-    var restoreDetailSection2: Int? = nil
-    var restoreDetailRow2: Int? = nil
+    var restoreDetailIndex2: Int? = nil
     var dataBackup = [ToDoEvent]()
     var tableBackup = [[[[CalendarPartition]]]]()
     
@@ -195,17 +193,15 @@ class ScheduleViewController: UIViewController {
             if restoreKey == 1 { break }
             for j in 0..<data[i].detail.count {
                 if restoreKey == 1 { break }
-                for k in 0..<data[i].detail[j].count {
-                    if restoreKey == 1 { break }
-                    if data[i].detail[j][k].toDoYear != nil {
+                    if data[i].detail[j].toDoYear != nil {
                         if restoreKey == 1 { break }
-                        if var year = data[i].detail[j][k].toDoYear,
-                           var month = data[i].detail[j][k].toDoMonth,
-                           var day = data[i].detail[j][k].toDoDay,
-                           let hour = data[i].detail[j][k].toDoHour,
-                           let min = data[i].detail[j][k].toDoMinute,
-                           let needHour = data[i].detail[j][k].needHour,
-                           let needMin = data[i].detail[j][k].needMin {
+                        if var year = data[i].detail[j].toDoYear,
+                           var month = data[i].detail[j].toDoMonth,
+                           var day = data[i].detail[j].toDoDay,
+                           let hour = data[i].detail[j].toDoHour,
+                           let min = data[i].detail[j].toDoMinute,
+                           let needHour = data[i].detail[j].needHour,
+                           let needMin = data[i].detail[j].needMin {
                             let needTime = needHour * 4 + needMin / 15
                             for l in 0..<needTime {
                                 if restoreKey == 1 { break }
@@ -225,26 +221,22 @@ class ScheduleViewController: UIViewController {
                                     year = year + 1
                                 }
                                 if table[year][month][day][(hour*4+min/15+l)%96].eventIndex == nil,
-                                   table[year][month][day][(hour*4+min/15+l)%96].detailSection == nil,
-                                   table[year][month][day][(hour*4+min/15+l)%96].detailRow == nil {
+                                   table[year][month][day][(hour*4+min/15+l)%96].detailIndex == nil {
                                     
                                     table[year][month][day][(hour*4+min/15+l)%96].eventIndex = i
-                                    table[year][month][day][(hour*4+min/15+l)%96].detailSection = j
-                                    table[year][month][day][(hour*4+min/15+l)%96].detailRow = k
+                                    table[year][month][day][(hour*4+min/15+l)%96].detailIndex = j
                                 } else {
                                     // 發現排程有衝突
                                     restoreKey = 1
                                     restoreEventIndex = table[year][month][day][(hour*4+min/15+l)%96].eventIndex
-                                    restoreDetailSection = table[year][month][day][(hour*4+min/15+l)%96].detailSection
-                                    restoreDetailRow = table[year][month][day][(hour*4+min/15+l)%96].detailRow
+                                    restoreDetailIndex = table[year][month][day][(hour*4+min/15+l)%96].detailIndex
                                     restoreEventIndex2 = i
-                                    restoreDetailSection2 = j
-                                    restoreDetailRow2 = k
+                                    restoreDetailIndex2 = j
                                     break
                                 }
                             }
                         }
-                    }
+                    
                 }
             }
         }
@@ -265,14 +257,7 @@ extension ScheduleViewController: UITableViewDelegate {
 extension ScheduleViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tableView == dateTableView {
-            return 1
-        }
-        if tableView == eventTableView,
-           let index = index{
-            return data[index].detail.count
-        }
-        return 0
+        1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -281,7 +266,7 @@ extension ScheduleViewController: UITableViewDataSource {
         }
         if tableView == eventTableView,
            let index = index {
-            return data[index].detail[section].count
+            return data[index].detail.count
         }
         return 0
     }
@@ -300,12 +285,11 @@ extension ScheduleViewController: UITableViewDataSource {
             let year = position.year - 2000
             let month = position.month - 1
             let day = position.day - 1
-            if let detailSection =  table[year][month][day][indexPath.row].detailSection,
-               let detailRow = table[year][month][day][indexPath.row].detailRow,
+            if let detailRow =  table[year][month][day][indexPath.row].detailIndex,
                let index = table[year][month][day][indexPath.row].eventIndex
             {
 //                print(detailSection, detailRow)
-                let detailName = data[index].detail[detailSection][detailRow].detailName
+                let detailName = data[index].detail[detailRow].detailName
                 cell.detailNameLabel.text = "\(detailName)"
             } else {
                 cell.detailNameLabel.text = ""
@@ -317,10 +301,10 @@ extension ScheduleViewController: UITableViewDataSource {
         if tableView == eventTableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: "scheduledetailcell", for: indexPath) as! ScheduleEventDetailTableViewCell
             if let index = index {
-                let name = data[index].detail[indexPath.section][indexPath.row].detailName
+                let name = data[index].detail[indexPath.row].detailName
                 cell.detailNameLabel.text = name
                 cell.cursorImageView.image = self.schedulePosition == indexPath ? UIImage(systemName: "arrowshape.backward.fill") : nil
-                if data[index].detail[indexPath.section][indexPath.row].toDoYear != nil{
+                if data[index].detail[indexPath.row].toDoYear != nil{
 //                    print(index, indexPath.section, indexPath.row, data[index].detail[indexPath.section][indexPath.row])
                     cell.checkImageView.image = UIImage(systemName: "checkmark")
                 } else {
@@ -346,23 +330,23 @@ extension ScheduleViewController: UITableViewDataSource {
            let schedulePosition = self.schedulePosition,
            let index = index {
             // 如果點的是同一個時間，取消排程
-            if  data[index].detail[schedulePosition.section][schedulePosition.row].toDoYear == position.year - 2000 &&
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMonth == position.month - 1 &&
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoDay == position.day - 1 &&
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoHour == indexPath.row/4 &&
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMinute == indexPath.row%4*15 {
+            if  data[index].detail[schedulePosition.row].toDoYear == position.year - 2000 &&
+                data[index].detail[schedulePosition.row].toDoMonth == position.month - 1 &&
+                data[index].detail[schedulePosition.row].toDoDay == position.day - 1 &&
+                data[index].detail[schedulePosition.row].toDoHour == indexPath.row/4 &&
+                data[index].detail[schedulePosition.row].toDoMinute == indexPath.row%4*15 {
                 
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoYear = nil
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMonth = nil
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoDay = nil
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoHour = nil
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMinute = nil
+                data[index].detail[schedulePosition.row].toDoYear = nil
+                data[index].detail[schedulePosition.row].toDoMonth = nil
+                data[index].detail[schedulePosition.row].toDoDay = nil
+                data[index].detail[schedulePosition.row].toDoHour = nil
+                data[index].detail[schedulePosition.row].toDoMinute = nil
             } else {
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoYear = position.year - 2000
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMonth = position.month - 1
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoDay = position.day - 1
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoHour = indexPath.row/4
-                data[index].detail[schedulePosition.section][schedulePosition.row].toDoMinute = indexPath.row%4*15
+                data[index].detail[schedulePosition.row].toDoYear = position.year - 2000
+                data[index].detail[schedulePosition.row].toDoMonth = position.month - 1
+                data[index].detail[schedulePosition.row].toDoDay = position.day - 1
+                data[index].detail[schedulePosition.row].toDoHour = indexPath.row/4
+                data[index].detail[schedulePosition.row].toDoMinute = indexPath.row%4*15
             }
             
             // 這邊應該可以做優化，例如init可以備份一份空的，update另外寫一個簡易版的function，不用全部跑一輪
@@ -376,34 +360,30 @@ extension ScheduleViewController: UITableViewDataSource {
                 // schedulePosition:剛排程的事項
                 // restore:即將被覆蓋的事項
                 if var index = restoreEventIndex,
-                   var section = restoreDetailSection,
-                   var row = restoreDetailRow,
+                   var row = restoreDetailIndex,
                    let newIndex = self.index {
-                    let newSection = schedulePosition.section
                     let newRow = schedulePosition.row
-                    let newDetailName = data[newIndex].detail[newSection][newRow].detailName
+                    let newDetailName = data[newIndex].detail[newRow].detailName
                     // 在update檢查時遇到先後問題，兩個都存起來，排除掉剛點擊的那個就是被覆蓋的事項
                     if index == newIndex,
-                       section == newSection,
                        row == newRow {
                         index = restoreEventIndex2!
-                        section = restoreDetailSection2!
-                        row = restoreDetailRow2!
+                        row = restoreDetailIndex2!
                     }
                     
-                    let detailName = data[index].detail[section][row].detailName
+                    let detailName = data[index].detail[row].detailName
                     let controller = UIAlertController(title: "發現排程重複", message: "是否以\(newDetailName)覆蓋\(detailName)？", preferredStyle: .alert)
                     let okAction = UIAlertAction(title: "覆蓋", style: .default) { _ in
-                        self.data[index].detail[section][row].toDoYear = nil
-                        self.data[index].detail[section][row].toDoMonth = nil
-                        self.data[index].detail[section][row].toDoDay = nil
-                        self.data[index].detail[section][row].toDoHour = nil
-                        self.data[index].detail[section][row].toDoMinute = nil
-                        self.data[index].detail[schedulePosition.section][schedulePosition.row].toDoYear = self.position.year - 2000
-                        self.data[index].detail[schedulePosition.section][schedulePosition.row].toDoMonth = self.position.month - 1
-                        self.data[index].detail[schedulePosition.section][schedulePosition.row].toDoDay = self.position.day - 1
-                        self.data[index].detail[schedulePosition.section][schedulePosition.row].toDoHour = indexPath.row/4
-                        self.data[index].detail[schedulePosition.section][schedulePosition.row].toDoMinute = indexPath.row%4*15
+                        self.data[index].detail[row].toDoYear = nil
+                        self.data[index].detail[row].toDoMonth = nil
+                        self.data[index].detail[row].toDoDay = nil
+                        self.data[index].detail[row].toDoHour = nil
+                        self.data[index].detail[row].toDoMinute = nil
+                        self.data[index].detail[schedulePosition.row].toDoYear = self.position.year - 2000
+                        self.data[index].detail[schedulePosition.row].toDoMonth = self.position.month - 1
+                        self.data[index].detail[schedulePosition.row].toDoDay = self.position.day - 1
+                        self.data[index].detail[schedulePosition.row].toDoHour = indexPath.row/4
+                        self.data[index].detail[schedulePosition.row].toDoMinute = indexPath.row%4*15
                         self.initialCalendarTable()
                         self.updateCalendarTable()
                         self.dateTableView.reloadData()

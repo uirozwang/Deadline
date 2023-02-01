@@ -8,7 +8,7 @@
 import UIKit
 
 protocol EventsViewControllerDelegate {
-    func updateCalendarTableView(data: [ToDoEvent])
+    func updateCalendarTableView(data: [ToDoEvent], categoryData: [ToDoCategory])
 }
 
 class EventsViewController: UIViewController {
@@ -102,14 +102,12 @@ class EventsViewController: UIViewController {
     
     private func saveData() {
         do {
-//            print(data.count)
             let data = try JSONEncoder().encode(data)
             UserDefaults.standard.set(data, forKey: "data")
         } catch {
             print("Encoding error", error)
         }
         do {
-//            print(categoryData.count)
             let data = try JSONEncoder().encode(categoryData)
             UserDefaults.standard.set(data, forKey: "category")
         } catch {
@@ -237,10 +235,24 @@ extension EventsViewController: UITabBarControllerDelegate {
         }
         // 來考慮一下什麼條件下呼叫這個function
         if previousVC == "Events" && tag == 0 {
-            delegate?.updateCalendarTableView(data: data)
+            delegate?.updateCalendarTableView(data: data, categoryData: categoryData)
         }
         
         return true
+    }
+    
+}
+
+extension EventsViewController: SettingBackupTableViewControllerDelegate {
+    
+    func SettingBackupTableViewControllerUpdateData(data: [ToDoEvent], categoryData: [ToDoCategory]) {
+        print(#function)
+        self.data = data
+        self.categoryData = categoryData
+        saveData()
+        print(data.count)
+        print(categoryData.count)
+//        tableView.reloadData()
     }
     
 }

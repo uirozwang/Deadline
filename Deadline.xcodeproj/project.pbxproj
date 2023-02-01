@@ -11,6 +11,8 @@
 		C725956028C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */; };
 		C725956428C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */; };
 		C725956828C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C725956728C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift */; };
+		C726943D296C7E0400084E51 /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C726943C296C7E0400084E51 /* SettingTableViewCell.swift */; };
+		C726943F296C95A000084E51 /* SettingBackupTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C726943E296C95A000084E51 /* SettingBackupTableViewController.swift */; };
 		C727915328E346A800C4EFBD /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C727915228E346A800C4EFBD /* SettingViewController.swift */; };
 		C727915528EA9F6300C4EFBD /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C727915428EA9F6300C4EFBD /* ScheduleViewController.swift */; };
 		C727915728EAA8BF00C4EFBD /* ScheduleEventDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C727915628EAA8BF00C4EFBD /* ScheduleEventDetailTableViewCell.swift */; };
@@ -44,6 +46,8 @@
 		C725955F28C4EF8F00BF2E82 /* CalendarDayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDayCollectionViewCell.swift; sourceTree = "<group>"; };
 		C725956328C5EB6B00BF2E82 /* CalendarWeekCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarWeekCollectionViewCell.swift; sourceTree = "<group>"; };
 		C725956728C5F9DA00BF2E82 /* CalendarEventTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEventTableViewCell.swift; sourceTree = "<group>"; };
+		C726943C296C7E0400084E51 /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
+		C726943E296C95A000084E51 /* SettingBackupTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingBackupTableViewController.swift; sourceTree = "<group>"; };
 		C727915228E346A800C4EFBD /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C727915428EA9F6300C4EFBD /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		C727915628EAA8BF00C4EFBD /* ScheduleEventDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleEventDetailTableViewCell.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 				C766909728E2D6520065D2F9 /* NewEventColorViewController.swift */,
 				C727915428EA9F6300C4EFBD /* ScheduleViewController.swift */,
 				C727915228E346A800C4EFBD /* SettingViewController.swift */,
+				C726943E296C95A000084E51 /* SettingBackupTableViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -113,6 +118,7 @@
 				C727915628EAA8BF00C4EFBD /* ScheduleEventDetailTableViewCell.swift */,
 				C727915A28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift */,
 				C727915828EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift */,
+				C726943C296C7E0400084E51 /* SettingTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -254,6 +260,7 @@
 				C72E2F12291A5898007FE461 /* CalendarDayCollectionViewCellDrawView.swift in Sources */,
 				C7EE71E2294C626800284599 /* TabBarController.swift in Sources */,
 				C727915928EAD8E900C4EFBD /* ScheduleDateTableViewCell.swift in Sources */,
+				C726943D296C7E0400084E51 /* SettingTableViewCell.swift in Sources */,
 				C727915328E346A800C4EFBD /* SettingViewController.swift in Sources */,
 				C788A55328C4B7CF009FEB5A /* CalendarViewController.swift in Sources */,
 				C797701128C8B59B00244A64 /* EventDetailTableViewCell.swift in Sources */,
@@ -267,6 +274,7 @@
 				C766909428DB2C2A0065D2F9 /* EventsTableViewCell.swift in Sources */,
 				C727915B28EAE18900C4EFBD /* ScheduleDateCollectionViewCell.swift in Sources */,
 				C7147A4A2951A04000D46F79 /* Extensions.swift in Sources */,
+				C726943F296C95A000084E51 /* SettingBackupTableViewController.swift in Sources */,
 				C766909828E2D6520065D2F9 /* NewEventColorViewController.swift in Sources */,
 				C788A55928C4B7CF009FEB5A /* Deadline.xcdatamodeld in Sources */,
 				C797700D28C7BC9C00244A64 /* EventModel.swift in Sources */,

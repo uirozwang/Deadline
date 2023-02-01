@@ -39,7 +39,6 @@ class CalendarViewController: UIViewController {
         //
         //        // 开始动画
         //        statusView.animateCircle(duration: 1.0)
-        dayCollectionView.reloadData()
         print(#function)
     }
     
@@ -57,7 +56,7 @@ class CalendarViewController: UIViewController {
     var currentDayDetails: [CalendarPartition] = []
     // tableView顯示當月event或指定日期的detail，false為month，true則為detail
     var monthOrDay: Bool = false
-    var clickedDay: Int = 0
+    var clickedDay: Int = 999
     
     let lineWidth: CGFloat = 2
     
@@ -66,13 +65,13 @@ class CalendarViewController: UIViewController {
     let currentDay = Calendar.current.component(.day, from: Date())
     let currentWeekday = Calendar.current.component(.weekday, from: Date())
     
-    var positionYear = 2022
-    var positionMonth = 12
+    var positionYear = 2019
+    var positionMonth = 9
     var positionDay = 20
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setCalendarToToday()
         dateLabel.text = "\(months[positionMonth - 1]) \(positionYear)"
         dayCollectionView.delegate = self
         dayCollectionView.dataSource = self
@@ -101,6 +100,12 @@ class CalendarViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+    }
+    
+    func setCalendarToToday() {
+        positionYear = currentYear
+        positionMonth = currentMonth
+        positionDay = currentDay
     }
     
     func checkWeekday(year: Int, month: Int, day: Int) -> Int{
@@ -188,36 +193,34 @@ class CalendarViewController: UIViewController {
     func updateCalendarTable() {
         for i in 0..<data.count {
             for j in 0..<data[i].detail.count {
-                for k in 0..<data[i].detail[j].count {
-                    if data[i].detail[j][k].toDoYear != nil {
-                        if var year = data[i].detail[j][k].toDoYear,
-                           var month = data[i].detail[j][k].toDoMonth,
-                           var day = data[i].detail[j][k].toDoDay,
-                           let hour = data[i].detail[j][k].toDoHour,
-                           let min = data[i].detail[j][k].toDoMinute,
-                           let needHour = data[i].detail[j][k].needHour,
-                           let needMin = data[i].detail[j][k].needMin {
-                            let needTime = needHour * 4 + needMin / 15
-                            for l in 0..<needTime {
-                                if hour*4+min/15+l==96 {
-                                    day = day + 1
-                                }
-                                if i%4 != 0 && j == 1  && day == 27{
-                                    day = 1
-                                    month = month + 1
-                                }
-                                if day > days[j] {
-                                    day = 1
-                                    month = month + 1
-                                }
-                                if month > 11 {
-                                    month = 1
-                                    year = year + 1
-                                }
-                                table[year][month][day][hour*4+min/15+l].eventIndex = i
-                                table[year][month][day][hour*4+min/15+l].detailSection = j
-                                table[year][month][day][hour*4+min/15+l].detailRow = k
+                if data[i].detail[j].toDoYear != nil {
+                    if var year = data[i].detail[j].toDoYear,
+                       var month = data[i].detail[j].toDoMonth,
+                       var day = data[i].detail[j].toDoDay,
+                       let hour = data[i].detail[j].toDoHour,
+                       let min = data[i].detail[j].toDoMinute,
+                       let needHour = data[i].detail[j].needHour,
+                       let needMin = data[i].detail[j].needMin {
+                        let needTime = needHour * 4 + needMin / 15
+                        for l in 0..<needTime {
+                            // 換日時不知道有沒有bug，有空再檢查
+                            if hour*4+min/15+l==96 {
+                                day = day + 1
                             }
+                            if year%4 != 0 && month == 1  && day == 27{
+                                day = 1
+                                month = month + 1
+                            }
+                            if day > days[j] {
+                                day = 1
+                                month = month + 1
+                            }
+                            if month > 11 {
+                                month = 1
+                                year = year + 1
+                            }
+                            table[year][month][day][hour*4+min/15+l].eventIndex = i
+                            table[year][month][day][hour*4+min/15+l].detailIndex = j
                         }
                     }
                 }
@@ -231,9 +234,9 @@ class CalendarViewController: UIViewController {
         let month = positionMonth - 1
         var events: Set<Int> = []
         
-        for i in 0..<table[year][month].count {
-            for j in 0..<96 {
-                if let eventIndex = table[year][month][i][j].eventIndex {
+        for day in 0..<table[year][month].count {
+            for time in 0..<96 {
+                if let eventIndex = table[year][month][day][time].eventIndex {
                     events.insert(eventIndex)
                 }
             }
@@ -289,7 +292,12 @@ extension CalendarViewController: UICollectionViewDataSource {
             if (indexPath.row+1 >= firstDayPosition) &&
                 (indexPath.row+1 < (firstDayPosition + days[positionMonth-1])) {
                 if positionYear%4 != 0 && positionMonth == 2 && (indexPath.row-firstDayPosition+2)==29 {
-                    cell.textLabel.text = ""
+                    cell.textLabel.text = " "
+                    cell.drawView.percentages = [100]
+                    cell.drawView.signR = [333]
+                    cell.drawView.signG = [333]
+                    cell.drawView.signB = [333]
+                    cell.drawView.needTimeLabel.text = ""
                 } else {
                     cell.textLabel.text = "\(indexPath.row-firstDayPosition+2)"
                     cell.backgroundColor = UIColor.systemBackground
@@ -298,7 +306,6 @@ extension CalendarViewController: UICollectionViewDataSource {
                     let year = positionYear - 2000
                     let month = positionMonth - 1
                     let day = indexPath.row-firstDayPosition+1
-                    
                     
                     // 用來記錄當天事項在各個分類中個別有幾個
                     var preIndexCount: [Int] = []
@@ -393,25 +400,36 @@ extension CalendarViewController: UICollectionViewDataSource {
         var check = 1
         currentDayDetails = []
         
-        for i in 0..<table[year][month][day].count {
-            check = 1
-            for j in 0..<currentDayDetails.count {
-                if table[year][month][day][i].eventIndex == currentDayDetails[j].eventIndex &&
-                    table[year][month][day][i].detailSection == currentDayDetails[j].detailSection &&
-                    table[year][month][day][i].detailRow == currentDayDetails[j].detailRow {
-                    check = 0
+        if day >= 0 && day < days[month] {
+            if (year%4) != 0 && month==1 && day==28 {
+                
+            } else {
+                for i in 0..<table[year][month][day].count {
+                    check = 1
+                    for j in 0..<currentDayDetails.count {
+                        if table[year][month][day][i].eventIndex == currentDayDetails[j].eventIndex &&
+                            table[year][month][day][i].detailIndex == currentDayDetails[j].detailIndex {
+                            check = 0
+                        }
+                    }
+                    if check == 1 && table[year][month][day][i].eventIndex != nil {
+                        currentDayDetails.append(table[year][month][day][i])
+                    }
+                }
+                if clickedDay == indexPath.row {
+                    monthOrDay = false
+                    clickedDay = 999
+                } else {
+                    monthOrDay = true
+                    clickedDay = indexPath.row
                 }
             }
-            if check == 1 && table[year][month][day][i].eventIndex != nil {
-                currentDayDetails.append(table[year][month][day][i])
-            }
+        } else {
+            monthOrDay = false
+            clickedDay = 999
         }
-        
-        clickedDay = indexPath.row
-        monthOrDay.toggle()
         tableView.reloadData()
         dayCollectionView.reloadData()
-        
     }
     
 }
@@ -485,16 +503,15 @@ extension CalendarViewController: UITableViewDataSource {
         
         if monthOrDay == true {
             if let eventIndex = currentDayDetails[indexPath.row].eventIndex,
-               let section = currentDayDetails[indexPath.row].detailSection,
-               let row = currentDayDetails[indexPath.row].detailRow {
+               let row = currentDayDetails[indexPath.row].detailIndex {
                 let eventName = data[eventIndex].name
-                let detailName = data[eventIndex].detail[section][row].detailName
-                let todoYear = data[eventIndex].detail[section][row].toDoYear
-                let todoMonth = data[eventIndex].detail[section][row].toDoMonth
-                let todoDay = data[eventIndex].detail[section][row].toDoDay
-                let todoHour = data[eventIndex].detail[section][row].toDoHour
-                let todoMin = data[eventIndex].detail[section][row].toDoMinute
-                cell.titleLabel.text = "\(eventName)-\(detailName)  Start: \(todoMonth!+1)/\(todoDay!+1) \(todoHour!):\(todoMin!)"
+                let detailName = data[eventIndex].detail[row].detailName
+                let todoYear = data[eventIndex].detail[row].toDoYear
+                let todoMonth = data[eventIndex].detail[row].toDoMonth
+                let todoDay = data[eventIndex].detail[row].toDoDay
+                let todoHour = data[eventIndex].detail[row].toDoHour
+                let todoMin = data[eventIndex].detail[row].toDoMinute
+                cell.titleLabel.text = "\(eventName)-\(detailName)  Start: \(todoYear!+2000)/\(todoMonth!+1)/\(todoDay!+1) \(todoHour!):\(todoMin!)"
                 if let categoryIndex = data[eventIndex].category {
                     let signR = categoryData[categoryIndex].signR
                     let signG = categoryData[categoryIndex].signG
@@ -535,7 +552,6 @@ extension CalendarViewController: UITabBarControllerDelegate {
             dayCollectionView.reloadData()
         }
     }
-    
 }
 
 // 暫時廢棄
@@ -551,9 +567,10 @@ extension CalendarViewController: TabBarControllerDelegate {
 }
 
 extension CalendarViewController: EventsViewControllerDelegate {
-    func updateCalendarTableView(data: [ToDoEvent]) {
+    func updateCalendarTableView(data: [ToDoEvent], categoryData: [ToDoCategory]) {
         //        print("CalendarVC EventsViewControllerDelegate", #function)
         self.data = data
+        self.categoryData = categoryData
         table = tableBackup
         updateCalendarTable()
         dayCollectionView.reloadData()

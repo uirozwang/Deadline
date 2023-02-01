@@ -53,7 +53,7 @@ class NewEventViewController: UIViewController {
     
     var data = ToDoEvent(category: 0,
                          name: "Event",
-                         detail: [[ToDoDetail(detailName:"Detail", needHour: 0, needMin: 0)]],
+                         detail: [ToDoDetail(detailName:"Detail", needHour: 0, needMin: 0)],
                          deadline: Date())
     
     var categoryData = [ToDoCategory]()
@@ -105,25 +105,23 @@ class NewEventViewController: UIViewController {
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         print(#function)
         if identifier == "neweventsavebutton" {
-            for details in data.detail {
-                for detail in details {
-                    if detail.detailName == "" {
-                        print("empty textfield")
-                        warningLabel.text = "Have empty textfield."
-                        return false
-                    }
-                    if detail.needHour == 0 && detail.needMin == 0 {
-                        print("Need time must be not zero.")
-                        warningLabel.text = "Need time must be not zero."
-                        return false
-                    }
+            for detail in data.detail {
+                if detail.detailName == "" {
+                    print("empty textfield")
+                    warningLabel.text = "Have empty textfield."
+                    return false
+                }
+                if detail.needHour == 0 && detail.needMin == 0 {
+                    print("Need time must be not zero.")
+                    warningLabel.text = "Need time must be not zero."
+                    return false
                 }
             }
         }
         let date = datePicker.date
         // 修改時區失敗，暫時先自己加8小時
         // 結果是Xcode的console只會顯示+0時區
-//        date = date + 8*3600
+        //        date = date + 8*3600
         data.deadline = date
         if let text = titleTextField.text {
             data.name = text
@@ -206,23 +204,23 @@ class NewEventViewController: UIViewController {
 extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        data.detail.count
+        1
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "detailcell", for: indexPath) as! EventDetailTableViewCell
         cell.delegate = self
         cell.numberLabel.text = "\(indexPath.row+1)"
         cell.detailTitleTextField.tag = (indexPath.section * 1000) + indexPath.row
-        cell.detailTitleTextField.text = data.detail[indexPath.section][indexPath.row].detailName
+        cell.detailTitleTextField.text = data.detail[indexPath.row].detailName
         
         let hourActions: [UIAction] = {
             var actions = [UIAction]()
             for i in 0..<5 {
-                if self.data.detail[indexPath.section][indexPath.row].needHour == i {
+                if self.data.detail[indexPath.row].needHour == i {
                     let action = UIAction(title: "\(i)", state: .on, handler: { action in
-                        self.data.detail[indexPath.section][indexPath.row].needHour = i
-                        if i == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
-                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
+                        self.data.detail[indexPath.row].needHour = i
+                        if i == 4 && self.data.detail[indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.row].needMin = 0
                             // 當PopUpButton的menu朝上的時候，tableView.reloadData()會導致動畫錯誤
                             tableView.reloadData()
                         }
@@ -230,9 +228,9 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
                     actions.append(action)
                 } else {
                     let action = UIAction(title: "\(i)", handler: { action in
-                        self.data.detail[indexPath.section][indexPath.row].needHour = i
-                        if i == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
-                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
+                        self.data.detail[indexPath.row].needHour = i
+                        if i == 4 && self.data.detail[indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
@@ -246,20 +244,20 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         let minActions: [UIAction] = {
             var actions = [UIAction]()
             for i in 0..<4 {
-                if self.data.detail[indexPath.section][indexPath.row].needMin == 15*i {
+                if self.data.detail[indexPath.row].needMin == 15*i {
                     let action = UIAction(title: "\(15*i)", state: .on, handler: { action in
-                        self.data.detail[indexPath.section][indexPath.row].needMin = 15*i
-                        if self.data.detail[indexPath.section][indexPath.row].needHour == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
-                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
+                        self.data.detail[indexPath.row].needMin = 15*i
+                        if self.data.detail[indexPath.row].needHour == 4 && self.data.detail[indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
                     actions.append(action)
                 } else {
                     let action = UIAction(title: "\(15*i)", handler: { action in
-                        self.data.detail[indexPath.section][indexPath.row].needMin = 15*i
-                        if self.data.detail[indexPath.section][indexPath.row].needHour == 4 && self.data.detail[indexPath.section][indexPath.row].needMin != 0 {
-                            self.data.detail[indexPath.section][indexPath.row].needMin = 0
+                        self.data.detail[indexPath.row].needMin = 15*i
+                        if self.data.detail[indexPath.row].needHour == 4 && self.data.detail[indexPath.row].needMin != 0 {
+                            self.data.detail[indexPath.row].needMin = 0
                             tableView.reloadData()
                         }
                     })
@@ -272,7 +270,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.detail[section].count
+        data.detail.count
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -281,17 +279,10 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         50
     }
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if section == data.detail.count - 1 {
-            let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: "mySectionFooterBottom") as! EventDetailTableViewFooterViewBottom
-            view.delegate = self
-            view.addDetailButton.tag = section
-            return view
-        } else {
-            let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: "mySectionFooter") as! EventDetailTableViewFooterView
-            view.delegate = self
-            view.addDetailButton.tag = section
-            return view
-        }
+        let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: "mySectionFooter") as! EventDetailTableViewFooterView
+        view.delegate = self
+        view.addDetailButton.tag = section
+        return view
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         
@@ -306,16 +297,16 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
         let deleteAction = UIContextualAction(style: .destructive, title: "delete") { action, sourceView, completionHandler in
             
             // 把整個section備份起來
-            let details = self.data.detail[indexPath.section]
+            let details = self.data.detail
             // 清空該section，把除了要刪掉的以外都加回去
-            self.data.detail[indexPath.section].removeAll()
+            self.data.detail.removeAll()
             for i in 0..<details.count {
                 if i != indexPath.row {
-                    self.data.detail[indexPath.section].append(details[i])
+                    self.data.detail.append(details[i])
                 }
             }
             
-            if self.data.detail[indexPath.section].count == 0 {
+            if self.data.detail.count == 0 {
                 let details = self.data.detail
                 self.data.detail.removeAll()
                 for i in 0..<details.count {
@@ -327,7 +318,7 @@ extension NewEventViewController: UITableViewDelegate, UITableViewDataSource {
             
             // 如果完全沒detail，會導致底部的footView也跟著消失，所以無論如何都要保留一個
             if self.data.detail.count == 0 {
-                self.data.detail = [[ToDoDetail(detailName: "")]]
+                self.data.detail = [ToDoDetail(detailName: "")]
             }
             
             tableView.reloadData()
@@ -352,7 +343,7 @@ extension NewEventViewController: EventDetailTableViewCellDelegate {
     
     func completeDetailTitleTextField(_ cell: EventDetailTableViewCell, text: String) {
         
-        data.detail[indexPath!.section][indexPath!.row].detailName = cell.detailTitleTextField.text!
+        data.detail[indexPath!.row].detailName = cell.detailTitleTextField.text!
         
     }
     
@@ -360,7 +351,7 @@ extension NewEventViewController: EventDetailTableViewCellDelegate {
 
 extension NewEventViewController: EventDetailTableViewFooterViewDelegate {
     func tappedFooterViewAddDetailButton(_ cell: EventDetailTableViewFooterView, section: Int) {
-        data.detail[section].append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
+        data.detail.append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
         tableView.reloadData()
     }
 }
@@ -368,11 +359,11 @@ extension NewEventViewController: EventDetailTableViewFooterViewDelegate {
 extension NewEventViewController: EventDetailTableViewFooterViewBottomDelegate {
 
     func tappedFooterViewAddDetailButton(_ cell: EventDetailTableViewFooterViewBottom, section: Int) {
-        data.detail[section].append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
+        data.detail.append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
         tableView.reloadData()
     }
     func tappedFooterViewAddSectionButton(_ view: EventDetailTableViewFooterViewBottom, section: Int) {
-        data.detail.append([ToDoDetail(detailName: "", needHour: 0, needMin: 0)])
+        data.detail.append(ToDoDetail(detailName: "", needHour: 0, needMin: 0))
         tableView.reloadData()
     }
 }
